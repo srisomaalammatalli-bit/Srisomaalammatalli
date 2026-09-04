@@ -1,0 +1,72 @@
+:root {
+  /* Brand Color Palette */
+  --color-maroon-primary: #6E1F2A;
+  --color-maroon-hover: #57171F;
+  --color-maroon-dark: #2E0D12;
+  --color-maroon-footer: #3B1117;
+  
+  /* Gold & Ochre Accents */
+  --color-gold: #B89146;
+  --color-gold-soft: #EBD9A9;
+  --color-gold-tint: rgba(184, 145, 70, 0.16);
+  --color-gold-border: rgba(184, 145, 70, 0.35);
+
+  /* Saffron & Notification */
+  --color-saffron: #D9772B;
+  --color-saffron-hover: #c4681f;
+  --color-saffron-tint: rgba(217, 119, 43, 0.14);
+
+  /* Surfaces & Backgrounds */
+  --color-cream-bg: #F8F5EF;
+  --color-sand-alt: #F4F1EA;
+  --color-sand-card: #F1E8D8;
+  --color-ivory-surface: #FDFBF6;
+
+  /* Borders & Dividers */
+  --color-border-subtle: #EAE2D2;
+  --color-border-input: #DDD3BF;
+
+  /* Neutral Text */
+  --color-text-primary: #252525;
+  --color-text-muted: #6B6B6B;
+  --color-text-light: #FDFBF6;
+  --color-text-light-muted: rgba(253, 251, 246, 0.72);
+
+  /* Financial Status Semantics */
+  --color-success: #2E7D5B;
+  --color-success-bg: rgba(46, 125, 91, 0.12);
+  --color-danger: #B23A48;
+  --color-danger-bg: rgba(178, 58, 72, 0.12);
+  --color-warning: #D9772B;
+  --color-warning-bg: rgba(217, 119, 43, 0.14);
+
+  /* Typography
+   *
+   * Open Sans throughout, matching the TTD Devasthanams site
+   * (ttdevasthanams.ap.gov.in), which a devotee here is likely to have used
+   * already. Headings and body share the face and are separated by weight and
+   * size instead — display keeps its own token so a future heading font can be
+   * introduced in one place rather than across some sixty rules.
+   *
+   * Telugu stays on Noto Sans Telugu: Open Sans carries no Telugu glyphs, so
+   * naming it alone would silently drop the Telugu text onto whatever fallback
+   * the browser happened to pick. It is listed after Open Sans in the Latin
+   * stacks so a Telugu word inside an English sentence still renders. */
+  --font-display: 'Open Sans', 'Noto Sans Telugu', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-ui: 'Open Sans', 'Noto Sans Telugu', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-telugu: 'Noto Sans Telugu', 'Open Sans', system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(37, 37, 37, 0.05);
+  --shadow-md: 0 12px 32px rgba(37, 37, 37, 0.08);
+  --shadow-lg: 0 20px 48px rgba(37, 37, 37, 0.12);
+  --shadow-modal: 0 32px 80px rgba(0, 0, 0, 0.3);
+
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+}

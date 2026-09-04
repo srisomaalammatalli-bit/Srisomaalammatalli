@@ -1,0 +1,3114 @@
+/* =========================================================
+   PUBLIC WEBSITE STYLES
+   Sri Somalamma Talli Temple
+========================================================= */
+
+/* ---------------------------------------------------------
+   Shared layout rhythm.
+   Every full-width section aligns to the SAME content edge,
+   so the header, hero copy, cards and footer share one
+   vertical gutter at all breakpoints. Change it here only.
+--------------------------------------------------------- */
+:root {
+  --site-max: 1120px;
+  --site-gutter: 24px;
+  --section-gap: 80px;
+}
+
+.site-container {
+  width: 100%;
+  max-width: var(--site-max);
+  margin-inline: auto;
+  padding-inline: var(--site-gutter);
+}
+
+/* Header */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(248, 245, 239, 0.96);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--color-gold-border);
+}
+
+.site-header-inner {
+  /* The header carries the temple name, seven links, Donate and Admin Login
+     on one row — more than the 1120px content column can hold once the name
+     is a real one. It is the single element allowed past --site-max, because
+     a truncated temple name in the masthead is worse than a header that runs
+     slightly wider than the copy beneath it. Everything else still aligns to
+     the shared gutter. */
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 14px var(--site-gutter);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.brand-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  /* The brand must be allowed to give way. Without this a flex item refuses
+     to shrink below its content width, so a long temple name pushed the nav
+     — which is placed by margin-left:auto — back over the top of it instead
+     of making itself narrower. */
+  min-width: 0;
+  flex: 0 1 auto;
+}
+
+.brand-emblem {
+  width: 44px;
+  height: 44px;
+  background: var(--color-maroon-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gold);
+  font-family: var(--font-telugu);
+  font-size: 19px;
+  font-weight: 600;
+  box-shadow: inset 0 0 0 2px rgba(184, 145, 70, 0.55);
+  flex-shrink: 0;
+}
+
+/* Ellipsis on the lines below only works if their container may also shrink;
+   a flex/grid child defaults to min-width:auto and would otherwise hold the
+   whole name at full width. */
+.brand-text {
+  min-width: 0;
+}
+
+.brand-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--color-maroon-primary);
+  /* Kept on one line, but truncated rather than allowed to overrun the nav.
+     The committee can set a longer name than this header was designed for,
+     and the layout has to survive that without a developer. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.brand-subtitle {
+  font-family: var(--font-telugu);
+  font-size: 11px;
+  color: var(--color-text-muted);
+  letter-spacing: 0.4px;
+  /* Two lines here made the brand block taller than the header row, which is
+     what pushed the emblem and title out of vertical alignment. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.nav-link {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 8px 11px;
+  white-space: nowrap;
+  border-radius: var(--radius-full);
+  color: var(--color-text-muted);
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  color: var(--color-maroon-primary);
+}
+
+.nav-link.active {
+  color: var(--color-maroon-primary);
+  font-weight: 700;
+  background: var(--color-sand-card);
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.admin-login-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  padding: 8px 10px;
+  white-space: nowrap;
+}
+
+/* Mobile Navigation Toggle (hidden on desktop) */
+.nav-toggle {
+  display: none;
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid var(--color-gold-border);
+  border-radius: var(--radius-sm);
+  padding: 9px 10px;
+  cursor: pointer;
+  line-height: 0;
+}
+
+.nav-toggle-bars {
+  display: inline-block;
+  width: 20px;
+  height: 14px;
+  position: relative;
+}
+
+.nav-toggle-bars span {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--color-maroon-primary);
+  transition: transform 0.25s ease, opacity 0.2s ease, top 0.25s ease;
+}
+
+.nav-toggle-bars span:nth-child(1) { top: 0; }
+.nav-toggle-bars span:nth-child(2) { top: 6px; }
+.nav-toggle-bars span:nth-child(3) { top: 12px; }
+
+.nav-toggle-bars.is-open span:nth-child(1) { top: 6px; transform: rotate(45deg); }
+.nav-toggle-bars.is-open span:nth-child(2) { opacity: 0; }
+.nav-toggle-bars.is-open span:nth-child(3) { top: 6px; transform: rotate(-45deg); }
+
+/* Mobile Navigation Drawer (hidden on desktop, and whenever closed) */
+.mobile-nav {
+  display: none;
+  border-top: 1px solid var(--color-gold-border);
+  background: var(--color-ivory-surface);
+  padding: 14px 16px 20px;
+  box-shadow: var(--shadow-md);
+  max-height: calc(100vh - 72px);
+  overflow-y: auto;
+}
+
+/* The hidden attribute must win over any display rule below. */
+.mobile-nav[hidden] {
+  display: none !important;
+}
+
+.mobile-nav-links {
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-nav-link {
+  padding: 13px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.mobile-nav-link:last-child {
+  border-bottom: none;
+}
+
+.mobile-nav-link.active {
+  color: var(--color-maroon-primary);
+  background: var(--color-sand-card);
+  font-weight: 700;
+}
+
+.mobile-nav-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  margin-top: 16px;
+  text-align: center;
+}
+
+.mobile-nav-footer .btn {
+  width: 100%;
+}
+
+/* Announcement Ticker */
+.announcement-ticker {
+  background: var(--color-maroon-primary);
+  color: var(--color-gold-soft);
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 12.5px;
+  letter-spacing: 0.6px;
+  padding: 8px 0;
+}
+
+.ticker-track {
+  display: inline-block;
+  animation: tick 40s linear infinite;
+}
+
+.ticker-item {
+  display: inline-block;
+  padding: 0 28px;
+}
+
+/* =========================================================
+   Hero Section
+   The real temple photograph: Sri Somalamma Talli Temple
+   illuminated at night during the annual festival.
+   --hero-image is the single swap point for the background;
+   see also HERO_IMAGE in src/config/media.js.
+========================================================= */
+.hero-section {
+  --hero-image: url('/assets/images/temple/temple-night-illumination.jpg');
+
+  position: relative;
+  min-height: 600px;
+  background-color: var(--color-maroon-dark);
+  background-image: var(--hero-image);
+  background-size: cover;
+  /* Keeps the gopuram in frame as the viewport narrows, rather than
+     cropping down to only the foreground fires. */
+  background-position: 50% 42%;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--color-text-light);
+  overflow: hidden;
+}
+
+/* --- Hero carousel ------------------------------------------------
+   The photographs sit behind the scrim and the headline, filling the hero
+   rather than occupying a band of their own. Slides move right-to-left: the
+   outgoing picture leaves to the left as the incoming one arrives from the
+   right, which reads as continuous travel in one direction instead of a
+   flicker between two images.
+
+   Only `transform` and `opacity` are animated, so the browser can hand the
+   whole thing to the compositor — a background-position or width animation
+   here would repaint the full-bleed image sixty times a second on a phone. */
+.hero-carousel {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.hero-carousel-track {
+  position: absolute;
+  inset: 0;
+}
+
+/* The hero carries only wide photographs.
+
+   Three of the temple's pictures are portrait — the closeup is 715x1600, an
+   aspect of 0.45 — and a 2.3-wide hero has no honest way to show them. `cover`
+   scales such a picture roughly five times and leaves a narrow band (the
+   alankaram appeared as jewellery with no goddess); `contain` strands it as a
+   letterboxed strip; a side panel clips and needs a muddy blurred fill behind
+   it. So the portraits are not shown here at all — they appear in the Amma
+   Vari gallery below, at their own shape and a size that does them justice,
+   and the hero rotates the wide photographs that genuinely suit it.
+
+   Only `transform` and `opacity` animate, so the compositor carries it. */
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: var(--color-maroon-dark);
+
+  /* Off to the right, waiting. */
+  transform: translate3d(100%, 0, 0);
+  opacity: 0;
+  /* Long and eased-out: a temple front page should feel unhurried, and a fast
+     slide over a devotional photograph reads as an advertisement. */
+  transition:
+    transform 1100ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 900ms ease;
+  will-change: transform;
+}
+
+.hero-slide.is-active {
+  transform: translate3d(0, 0, 0);
+  opacity: 1;
+  z-index: 1;
+}
+
+.hero-slide:not(.is-active) {
+  z-index: 0;
+}
+
+/* --- Amma Vari gallery -------------------------------------------------
+   Where the portrait photographs belong: upright frames, nothing cropped,
+   large enough to actually see the goddess. */
+.deity-strip {
+  padding: 56px var(--site-gutter) 8px;
+  max-width: var(--site-max);
+  margin-inline: auto;
+  text-align: center;
+}
+
+.deity-strip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 22px;
+  margin-top: 26px;
+}
+
+.deity-figure {
+  margin: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--color-maroon-dark);
+  box-shadow: var(--shadow-md);
+  transition: transform 260ms ease, box-shadow 260ms ease;
+}
+
+.deity-figure:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 44px rgba(37, 37, 37, 0.18);
+}
+
+/* 3:4 keeps every frame the same height while the photograph inside stays
+   uncropped in its own proportion. */
+.deity-figure img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  /* The subject sits high in these photographs — the crown and face — so the
+     crop is taken from the top rather than the middle. */
+  object-position: 50% 12%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deity-figure,
+  .deity-figure:hover {
+    transition: none;
+    transform: none;
+  }
+  .hero-slide {
+    transition: opacity 200ms ease;
+    transform: none;
+  }
+  .hero-slide:not(.is-active) {
+    transform: none;
+    opacity: 0;
+  }
+}
+
+.hero-carousel-controls {
+  position: relative;
+  z-index: 4;
+  margin: 30px auto 0;
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  /* A quiet slab so the controls stay findable over a bright photograph
+     without competing with the headline above them. */
+  background: rgba(26, 7, 10, 0.42);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(235, 217, 169, 0.22);
+}
+
+.hero-carousel-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-gold-soft);
+  font-size: 11px;
+  line-height: 1;
+  padding: 6px 7px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 150ms ease, background-color 150ms ease;
+}
+
+.hero-carousel-toggle:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.hero-carousel-dots {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+/* The dot itself is small, but its hit area is not: a 10px target is unusable
+   on a phone, so the padding gives it a comfortable touch size while the
+   visible mark stays discreet. */
+.hero-dot {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(235, 217, 169, 0.75);
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 200ms ease, transform 200ms ease, width 200ms ease;
+  position: relative;
+}
+
+.hero-dot::after {
+  /* Invisible 44px target around the visible dot. */
+  content: '';
+  position: absolute;
+  inset: -17px;
+}
+
+.hero-dot:hover {
+  background: rgba(235, 217, 169, 0.55);
+}
+
+.hero-dot.is-active {
+  background: var(--color-gold);
+  border-color: var(--color-gold);
+  /* The active dot lengthens rather than only changing colour, so the current
+     position is legible without relying on colour alone. */
+  width: 26px;
+  border-radius: 999px;
+}
+
+/* Keyboard focus must be obvious over a photograph of any brightness. */
+.hero-carousel-toggle:focus-visible,
+.hero-dot:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 3px;
+}
+
+/* A visitor who asked their system for less motion gets the photographs with
+   no travel at all — the component also stops advancing them on its own. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide {
+    transition: opacity 200ms ease;
+    transform: none;
+  }
+  .hero-slide:not(.is-active) {
+    transform: none;
+    opacity: 0;
+  }
+}
+
+/* Readability scrim over the image — keeps the display type legible
+   regardless of how bright the eventual photograph is. */
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  /* Above the slides (which reach z-index 1) and below the headline, or an
+     incoming photograph would paint over the scrim and leave the type sitting
+     on bare image. */
+  z-index: 2;
+  background:
+    radial-gradient(ellipse at 50% 42%, rgba(46, 13, 18, 0) 0%, rgba(26, 7, 10, 0.55) 78%),
+    linear-gradient(180deg, rgba(26, 7, 10, 0.82) 0%, rgba(26, 7, 10, 0.30) 42%, rgba(26, 7, 10, 0.70) 100%);
+  pointer-events: none;
+}
+
+.hero-content {
+  position: relative;
+  /* Above the scrim at z-index 2. */
+  z-index: 3;
+  max-width: 860px;
+  padding: 60px 24px 100px;
+}
+
+.hero-telugu {
+  font-family: var(--font-telugu);
+  font-size: 16px;
+  color: var(--color-gold-soft);
+  letter-spacing: 2px;
+  margin-bottom: 14px;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.6);
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(30px, 4.4vw, 50px);
+  font-weight: 700;
+  color: var(--color-ivory-surface);
+  line-height: 1.1;
+  margin: 0 0 18px;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.65), 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.hero-desc {
+  font-size: clamp(15px, 2vw, 17.5px);
+  color: rgba(253, 251, 246, 0.94);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.55);
+  max-width: 580px;
+  margin: 0 auto 32px;
+  line-height: 1.65;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Floating Quick Info Strip */
+.quick-info-strip {
+  max-width: var(--site-max);
+  margin: -60px auto 0;
+  padding: 0 var(--site-gutter);
+  position: relative;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: 20px;
+}
+
+.info-card {
+  background: var(--color-ivory-surface);
+  border: 1px solid rgba(184, 145, 70, 0.35);
+  border-radius: var(--radius-lg);
+  padding: 24px 26px;
+  box-shadow: var(--shadow-md);
+}
+
+.info-card-maroon {
+  background: var(--color-maroon-primary);
+  border: none;
+  color: var(--color-text-light);
+  box-shadow: 0 12px 32px rgba(110, 31, 42, 0.3);
+}
+
+/* About / story column */
+.about-image-inner {
+  text-align: center;
+  padding: 24px;
+}
+
+.brand-emblem-lg {
+  width: 64px;
+  height: 64px;
+  font-size: 28px;
+  margin: 0 auto 16px;
+}
+
+.about-image-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.about-image-sub {
+  font-size: 12px;
+  color: var(--color-gold-soft);
+  margin-top: 6px;
+}
+
+.about-telugu {
+  font-size: 15px;
+  color: var(--color-gold);
+  margin: 0 0 18px;
+}
+
+.about-para {
+  font-size: 15px;
+  line-height: 1.75;
+  margin: 0 0 16px;
+}
+
+.about-para-muted {
+  color: var(--color-text-muted);
+  margin-bottom: 24px;
+}
+
+/* Repeating card/section text roles */
+.card-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  margin-bottom: 8px;
+}
+
+.info-card-maroon .card-label {
+  color: var(--color-gold-soft);
+}
+
+.card-value {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.card-note {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+.info-card-maroon .card-note {
+  color: rgba(253, 251, 246, 0.8);
+}
+
+.info-card-maroon .card-note a {
+  color: var(--color-gold-soft);
+  text-decoration: underline;
+}
+
+/* Section intro (eyebrow + display heading) */
+.section-eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--color-saffron);
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(23px, 2.6vw, 30px);
+  font-weight: 700;
+  color: var(--color-maroon-primary);
+  line-height: 1.25;
+  margin: 0 0 12px;
+}
+
+.section-lede {
+  font-size: 15px;
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  margin: 0 0 24px;
+}
+
+/* Centered full-width section (transparency preview) */
+.section-centered {
+  max-width: var(--site-max);
+  margin: var(--section-gap) auto;
+  padding: 0 var(--site-gutter);
+  text-align: center;
+}
+
+.section-centered .section-lede {
+  max-width: 520px;
+  margin: 0 auto 36px;
+}
+
+/* Financial figure trio */
+.figure-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: 20px;
+  max-width: 920px;
+  margin: 0 auto 36px;
+}
+
+.figure-card {
+  padding: 28px;
+  border-radius: var(--radius-lg);
+}
+
+.figure-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: 8px;
+}
+
+.info-card-maroon .figure-label {
+  color: var(--color-gold-soft);
+}
+
+.figure-value {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.figure-value-income {
+  color: var(--color-success);
+}
+
+.figure-value-expense {
+  color: var(--color-danger);
+}
+
+/* Transparency: KPI trio, panels, breakdown bars */
+.kpi-trio {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+  gap: 20px;
+  margin-bottom: 44px;
+}
+
+.figure-card-lg {
+  padding: 30px;
+}
+
+.figure-value-lg {
+  font-size: 40px;
+}
+
+.figure-note {
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+  margin-top: 6px;
+}
+
+.info-card-maroon .figure-note {
+  color: rgba(253, 251, 246, 0.75);
+}
+
+.info-card-maroon .figure-value {
+  color: var(--color-ivory-surface);
+}
+
+.panel-duo {
+  display: grid;
+  /* min(400px, 100%) keeps the 400px floor on wide screens but lets the track
+     shrink below it on narrow ones, instead of forcing horizontal overflow. */
+  grid-template-columns: repeat(auto-fit, minmax(min(400px, 100%), 1fr));
+  gap: 24px;
+  margin-bottom: 44px;
+}
+
+.panel-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 22px;
+}
+
+.breakdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13.5px;
+  margin-bottom: 6px;
+}
+
+.breakdown-label {
+  font-weight: 600;
+}
+
+.breakdown-amount {
+  font-weight: 700;
+}
+
+.breakdown-track {
+  height: 8px;
+  background: var(--color-sand-card);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+/* Contact page */
+.contact-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 1fr));
+  gap: 40px;
+  align-items: start;
+}
+
+.contact-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Placeholder for the embedded map. Replace with the real embed when ready. */
+.map-placeholder {
+  height: 260px;
+  border-radius: var(--radius-lg);
+  background: repeating-linear-gradient(45deg, #F1E8D8, #F1E8D8 10px, #EDE3CF 10px, #EDE3CF 20px);
+  border: 1px dashed var(--color-gold);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-maroon-primary);
+  gap: 8px;
+}
+
+.map-pin {
+  font-size: 32px;
+}
+
+.map-title {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.map-sub {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.contact-details {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.contact-row {
+  display: flex;
+  gap: 14px;
+  font-size: 14px;
+}
+
+.contact-icon {
+  color: var(--color-gold);
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.contact-value {
+  color: var(--color-text-muted);
+  margin-top: 2px;
+  line-height: 1.6;
+}
+
+.timing-row {
+  border-top: 1px solid var(--color-sand-card);
+  padding-top: 16px;
+  display: flex;
+  gap: 32px;
+}
+
+.timing-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: 4px;
+}
+
+.timing-value {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.contact-form-card {
+  padding: 34px;
+}
+
+.form-card-title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--color-maroon-primary);
+  margin: 0 0 8px;
+}
+
+.form-card-sub {
+  font-size: 13.5px;
+  color: var(--color-text-muted);
+  margin: 0 0 24px;
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-alert-success {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.form-alert-error {
+  color: var(--color-danger);
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+/* Quick Action Cards */
+.action-grid {
+  max-width: var(--site-max);
+  margin: 64px auto 0;
+  padding: 0 var(--site-gutter);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: 20px;
+}
+
+.action-card {
+  background: var(--color-ivory-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 28px 24px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.action-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-gold);
+}
+
+.action-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  margin-bottom: 14px;
+  border-radius: 50%;
+  background: var(--color-sand-card);
+  color: var(--color-maroon-primary);
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+.action-card:hover .action-card-icon {
+  background: var(--color-maroon-primary);
+  color: var(--color-gold-soft);
+}
+
+/* Compact value rows used where a card lists several items. */
+.card-value-compact {
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.card-note-inline {
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.info-card-maroon .card-note-inline {
+  color: rgba(253, 251, 246, 0.75);
+}
+
+/* Screen-reader-only text (used by live regions and skip targets). */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.action-card-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--color-maroon-primary);
+  margin-bottom: 6px;
+}
+
+.action-card-desc {
+  font-size: 13.5px;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+/* About / Story Section */
+.about-section {
+  background: var(--color-sand-card);
+  margin-top: var(--section-gap);
+  padding: var(--section-gap) var(--site-gutter);
+}
+
+.about-inner {
+  max-width: var(--site-max);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: center;
+}
+
+.about-image-box {
+  min-height: 420px;
+  background: linear-gradient(135deg, #6E1F2A 0%, #3B1117 100%);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gold-soft);
+  position: relative;
+}
+
+.stat-grid {
+  display: flex;
+  gap: 36px;
+  margin-top: 28px;
+}
+
+.stat-number {
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--color-maroon-primary);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+/* ---------------------------------------------------------
+   Page shell + page header
+   Shared by Events / Gallery / Videos / Transparency / Contact
+--------------------------------------------------------- */
+.page-main {
+  max-width: var(--site-max);
+  margin: 0 auto;
+  padding: 56px var(--site-gutter) 88px;
+  animation: fadeUp 0.4s ease;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.page-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  margin-bottom: 10px;
+}
+
+.page-title {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 3.2vw, 36px);
+  font-weight: 700;
+  color: var(--color-maroon-primary);
+  line-height: 1.2;
+  margin: 0 0 8px;
+}
+
+.page-subtitle {
+  font-size: 15.5px;
+  color: var(--color-text-muted);
+  margin: 0 auto;
+  max-width: 620px;
+  line-height: 1.6;
+}
+
+/* Filter / segmented pills (gallery categories, FY selector) */
+.pill-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+}
+
+.pill {
+  padding: 9px 20px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  border: 1.5px solid var(--color-border-input);
+  background: var(--color-ivory-surface);
+  color: var(--color-text-muted);
+  font-family: inherit;
+}
+
+.pill:hover {
+  border-color: var(--color-maroon-primary);
+  color: var(--color-maroon-primary);
+}
+
+.pill.active {
+  background: var(--color-maroon-primary);
+  color: var(--color-text-light);
+  border-color: var(--color-maroon-primary);
+}
+
+.pill-lg {
+  padding: 10px 24px;
+  font-size: 13.5px;
+  font-weight: 700;
+  background: transparent;
+}
+
+/* ---------------------------------------------------------
+   Card media
+   One treatment for every image slot on the site. When a real
+   photograph is supplied the <img> paints; until then the
+   symbol placeholder holds the exact same box, so swapping in
+   real assets needs no markup or CSS change.
+--------------------------------------------------------- */
+.card-media {
+  position: relative;
+  background: var(--color-sand-card);
+  overflow: hidden;
+}
+
+.card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.card-media-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(184, 145, 70, 0.16) 0%, rgba(184, 145, 70, 0) 62%),
+    var(--color-sand-card);
+  color: var(--color-maroon-primary);
+  font-size: 34px;
+  line-height: 1;
+  user-select: none;
+}
+
+.event-media {
+  height: 170px;
+}
+
+/* Gallery tiles */
+.page-header-tight {
+  margin-bottom: 32px;
+}
+
+.page-main-narrow {
+  max-width: 760px;
+  padding-top: 48px;
+}
+
+.page-header-compact {
+  margin-bottom: 36px;
+}
+
+.page-title-sm {
+  font-size: clamp(22px, 2.6vw, 29px);
+}
+
+.donate-telugu {
+  font-size: 14px;
+  color: var(--color-gold);
+  letter-spacing: 1px;
+  margin: 0 0 8px;
+}
+
+.gallery-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+  box-sizing: border-box;
+  background: linear-gradient(145deg, var(--color-sand-card) 0%, var(--color-border-subtle) 100%);
+}
+
+.gallery-placeholder-symbol {
+  font-size: 44px;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+.gallery-placeholder-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-maroon-primary);
+}
+
+/* Applied by CardMedia once a real gallery photograph is supplied;
+   the per-tile height comes through inline to build the masonry rhythm. */
+.gallery-media {
+  width: 100%;
+}
+
+.gallery-tag {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  background: rgba(37, 37, 37, 0.75);
+  color: var(--color-text-light);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  backdrop-filter: blur(4px);
+}
+
+/* Event Cards */
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
+  gap: 24px;
+}
+
+.event-card {
+  background: var(--color-ivory-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all 0.25s ease;
+}
+
+.event-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.event-card-body {
+  padding: 22px 24px;
+  display: flex;
+  gap: 16px;
+}
+
+.event-card-title {
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: 1.2;
+  margin: 0 0 6px;
+}
+
+.event-card-meta {
+  font-size: 12px;
+  color: var(--color-gold);
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+
+.event-card-desc {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.date-badge {
+  text-align: center;
+  min-width: 54px;
+  flex-shrink: 0;
+}
+
+.date-badge-month {
+  background: var(--color-maroon-primary);
+  color: var(--color-gold-soft);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  border-radius: 8px 8px 0 0;
+  padding: 4px 0;
+}
+
+.date-badge-day {
+  background: var(--color-sand-card);
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-maroon-primary);
+  border-radius: 0 0 8px 8px;
+  padding: 2px 0;
+}
+
+/* Gallery Masonry */
+.gallery-masonry {
+  columns: 3;
+  column-gap: 20px;
+}
+
+.gallery-item {
+  break-inside: avoid;
+  /* rendered as <figure>: reset the UA margin */
+  margin: 0 0 20px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  position: relative;
+  transition: all 0.25s ease;
+}
+
+.gallery-item:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* Video Card */
+.videos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
+  gap: 24px;
+}
+
+.video-tag {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.65);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.video-card-body {
+  padding: 20px 22px;
+}
+
+.video-card-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: 1.3;
+  margin: 0 0 6px;
+}
+
+.video-thumb-button {
+  display: block;
+  width: 100%;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--color-maroon-dark);
+}
+
+.video-embed {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
+
+.video-embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.video-card-telugu {
+  font-size: 13px;
+  color: var(--color-gold);
+  margin: 2px 0 4px;
+}
+
+.video-card-meta {
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.video-card {
+  background: var(--color-ivory-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  text-decoration: none;
+  display: block;
+  transition: all 0.25s ease;
+}
+
+.video-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.video-thumb {
+  height: 190px;
+  background: #2E0D12;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.play-button {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(110, 31, 42, 0.9);
+  color: var(--color-text-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  padding-left: 3px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+
+/* Multi-Step Donation Wizard */
+.donation-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 36px;
+}
+
+.step-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 88px;
+}
+
+.step-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13.5px;
+  font-weight: 700;
+  transition: all 0.25s ease;
+  background: var(--color-sand-card);
+  color: var(--color-text-muted);
+}
+
+.step-circle.active {
+  background: var(--color-maroon-primary);
+  color: var(--color-text-light);
+  box-shadow: 0 0 0 4px rgba(110, 31, 42, 0.16);
+}
+
+.step-circle.completed {
+  background: var(--color-gold);
+  color: var(--color-text-light);
+}
+
+.step-line {
+  width: 40px;
+  height: 2px;
+  background: var(--color-border-subtle);
+  margin: 0 -20px 22px;
+}
+
+.step-line.completed {
+  background: var(--color-gold);
+}
+
+/* Digital Receipt Card */
+.receipt-card {
+  background: var(--color-ivory-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.receipt-header {
+  background: var(--color-maroon-primary);
+  padding: 32px 36px;
+  text-align: center;
+  color: var(--color-text-light);
+}
+
+.receipt-body {
+  padding: 32px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+/* =========================================================
+   Poojas & booking
+========================================================= */
+.pooja-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  gap: 20px;
+}
+
+.pooja-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-ivory-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.pooja-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.pooja-card-body {
+  padding: 26px 24px 18px;
+  flex: 1;
+}
+
+.pooja-name {
+  font-family: var(--font-display);
+  font-size: 23px;
+  font-weight: 600;
+  color: var(--color-maroon-primary);
+  margin: 0 0 2px;
+}
+
+.pooja-name-telugu {
+  font-size: 14px;
+  color: var(--color-gold);
+  margin: 0 0 10px;
+}
+
+.pooja-description {
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--color-text-muted);
+  margin: 0 0 16px;
+}
+
+.pooja-meta {
+  margin: 0;
+  border-top: 1px solid var(--color-border-subtle);
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pooja-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.pooja-meta-row dt {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-muted);
+}
+
+.pooja-meta-row dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.pooja-price {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--color-maroon-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.pooja-card-footer {
+  padding: 0 24px 24px;
+}
+
+.pooja-unavailable {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--color-text-muted);
+  background: var(--color-sand-alt);
+  border-radius: var(--radius-sm);
+  padding: 11px 13px;
+  margin: 0;
+}
+
+.booking-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 28px 26px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+  gap: 16px;
+}
+
+.booking-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  border-top: 1px solid var(--color-border-subtle);
+  padding-top: 18px;
+}
+
+/* =========================================================
+   Admin payment verification
+========================================================= */
+.admin-page-header {
+  margin-bottom: 20px;
+}
+
+.admin-page-title {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--color-maroon-primary);
+  margin: 0 0 4px;
+}
+
+.admin-page-subtitle {
+  font-size: 13.5px;
+  color: var(--color-text-muted);
+  margin: 0;
+  max-width: 620px;
+  line-height: 1.6;
+}
+
+.admin-filter-row {
+  justify-content: flex-start;
+  margin-bottom: 22px;
+}
+
+.payment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.payment-card {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  background: var(--color-ivory-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 20px 22px;
+}
+
+.payment-card-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.payment-card-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.payment-reference {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-maroon-primary);
+  margin: 0;
+}
+
+.payment-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(170px, 100%), 1fr));
+  gap: 12px 20px;
+  margin: 0;
+}
+
+.payment-fields dt {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: 2px;
+}
+
+.payment-fields dd {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.payment-field-wide {
+  grid-column: 1 / -1;
+}
+
+.payment-amount {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.payment-utr {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+}
+
+.payment-claim-note {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+  margin: 14px 0 0;
+}
+
+.payment-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  flex-shrink: 0;
+}
+
+.payment-dialog {
+  max-width: 480px;
+  padding: 28px;
+}
+
+.payment-dialog-title {
+  font-family: var(--font-display);
+  font-size: 23px;
+  font-weight: 600;
+  color: var(--color-maroon-primary);
+  margin: 0 0 12px;
+}
+
+.payment-dialog-body {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--color-text-muted);
+  margin: 0 0 18px;
+}
+
+.payment-dialog-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.form-alert-success {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  border-radius: var(--radius-sm);
+  padding: 13px 16px;
+  font-size: 13.5px;
+  font-weight: 600;
+  margin: 0 0 18px;
+}
+
+@media (max-width: 768px) {
+  .payment-card {
+    flex-direction: column;
+  }
+  .payment-card-actions {
+    flex-direction: row;
+    width: 100%;
+  }
+  .payment-card-actions .btn {
+    flex: 1;
+  }
+  .booking-actions {
+    flex-direction: column-reverse;
+  }
+  .booking-actions .btn {
+    width: 100%;
+  }
+}
+
+/* =========================================================
+   PhonePe payment panel
+   Shared by the donation and pooja booking flows.
+========================================================= */
+.pay-panel {
+  max-width: 560px;
+  margin: 0 auto;
+  background: var(--color-ivory-surface);
+  border: 1px solid var(--color-gold-border);
+  border-radius: var(--radius-lg);
+  padding: 32px 28px;
+  box-shadow: var(--shadow-md);
+}
+
+.pay-header {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.pay-title {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 3vw, 28px);
+  font-weight: 600;
+  color: var(--color-maroon-primary);
+  margin: 0 0 6px;
+}
+
+.pay-reference {
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.pay-summary {
+  background: var(--color-sand-card);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  font-size: 13.5px;
+  margin-bottom: 18px;
+}
+
+.pay-amount {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin: 0 0 22px;
+  padding: 16px;
+  background: var(--color-maroon-primary);
+  border-radius: var(--radius-md);
+  color: var(--color-ivory-surface);
+}
+
+.pay-amount-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--color-gold-soft);
+}
+
+.pay-amount-value {
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+/* QR — large enough to scan from another device. */
+.pay-qr-wrap {
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+.pay-qr-button {
+  display: inline-block;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  cursor: zoom-in;
+  line-height: 0;
+}
+
+.pay-qr {
+  width: 320px;
+  height: 320px;
+  max-width: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.pay-qr-caption {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 12px 0 4px;
+}
+
+.pay-qr-zoom-link {
+  background: none;
+  border: none;
+  color: var(--color-maroon-primary);
+  font-size: 12.5px;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.pay-steps {
+  margin: 0 0 24px;
+  padding-left: 20px;
+  font-size: 13.5px;
+  line-height: 1.9;
+  color: var(--color-text-muted);
+}
+
+.pay-form-title {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--color-maroon-primary);
+  margin: 0 0 14px;
+}
+
+.pay-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border-top: 1px solid var(--color-border-subtle);
+  padding-top: 22px;
+}
+
+.form-help {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin: 4px 0 0;
+}
+
+.pay-disclaimer {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+  background: var(--color-sand-alt);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin: 4px 0 0;
+}
+
+.pay-disclaimer .icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--color-gold);
+}
+
+/* Enlarged QR */
+.pay-qr-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(26, 7, 10, 0.82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.pay-qr-modal-inner {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  text-align: center;
+  max-width: 92vw;
+}
+
+.pay-qr-large {
+  width: min(460px, 78vw);
+  height: auto;
+  display: block;
+  margin: 0 auto 12px;
+}
+
+.pay-qr-modal-amount {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--color-maroon-primary);
+  margin: 0 0 14px;
+}
+
+/* Pending-verification confirmation */
+.pay-pending {
+  max-width: 560px;
+  margin: 0 auto;
+  text-align: center;
+  background: var(--color-ivory-surface);
+  border: 1px solid var(--color-gold-border);
+  border-radius: var(--radius-lg);
+  padding: 40px 28px;
+}
+
+.pay-pending-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 7px 14px;
+  border-radius: var(--radius-full);
+  margin-bottom: 16px;
+}
+
+.pay-pending-rows {
+  text-align: left;
+  border-top: 1px solid var(--color-border-subtle);
+  margin-top: 22px;
+  padding-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pay-pending-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 13.5px;
+}
+
+.pay-pending-row dt {
+  color: var(--color-text-muted);
+}
+
+.pay-pending-row dd {
+  margin: 0;
+  font-weight: 700;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 640px) {
+  .pay-panel,
+  .pay-pending {
+    padding: 24px 18px;
+  }
+  .pay-qr {
+    width: 240px;
+    height: 240px;
+  }
+  .pay-amount-value {
+    font-size: 28px;
+  }
+}
+
+/* Page shell */
+.site-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.site-main {
+  flex: 1;
+}
+
+/* Public Footer */
+.site-footer {
+  background: var(--color-maroon-footer);
+  color: var(--color-text-light-muted);
+  margin-top: auto;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.brand-emblem-sm {
+  width: 36px;
+  height: 36px;
+  font-size: 15px;
+}
+
+.footer-brand-name {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-ivory-surface);
+}
+
+.footer-blurb {
+  font-size: 13.5px;
+  line-height: 1.7;
+  margin: 0;
+  max-width: 360px;
+}
+
+.footer-heading {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  margin: 0 0 14px;
+}
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  font-size: 13.5px;
+}
+
+.footer-links a {
+  color: inherit;
+}
+
+.footer-links a:hover {
+  color: var(--color-gold-soft);
+}
+
+.footer-contact span {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.footer-contact span .icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--color-gold);
+}
+
+.footer-pending {
+  font-style: italic;
+  opacity: 0.75;
+}
+
+.footer-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13.5px;
+  font-style: normal;
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(253, 251, 246, 0.1);
+  padding: 18px var(--site-gutter);
+  text-align: center;
+  font-size: 12px;
+  color: rgba(253, 251, 246, 0.45);
+}
+
+.footer-bottom a {
+  color: rgba(253, 251, 246, 0.6);
+}
+
+.footer-bottom a:hover {
+  color: var(--color-gold-soft);
+}
+
+.site-footer-inner {
+  max-width: var(--site-max);
+  margin: 0 auto;
+  padding: 56px var(--site-gutter) 36px;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 40px;
+}
+
+/* =========================================================
+   Responsive Rules
+   Targets: 1440 / 1280 desktop-laptop, 1024 tablet-landscape,
+            768 tablet, 640 large phone, 390 phone
+========================================================= */
+
+/* Laptop — tighten the gutters, keep the desktop layout */
+@media (max-width: 1280px) {
+  :root {
+    --site-gutter: 20px;
+  }
+  .site-header-inner {
+    gap: 16px;
+  }
+  .nav-link {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+}
+
+/* Tablet landscape — collapse the inline nav into the drawer */
+/* The inline nav carries seven links plus Donate and Admin Login. Measured at
+   1456px the brand and nav clear each other by only 16px, and the temple name
+   was already being truncated — so the drawer has to take over well before
+   the old 1180px, or the masthead loses the name it exists to show. */
+@media (max-width: 1280px) {
+  .site-nav {
+    display: none;
+  }
+  .nav-toggle {
+    display: inline-block;
+  }
+  .mobile-nav.is-open {
+    display: block;
+  }
+  /* Donate belongs beside the menu button at the right, not adrift mid-row.
+     Both .header-actions and .nav-toggle carry margin-left:auto, so the free
+     space was being split between them. Letting the brand grow absorbs it all
+     on the left instead, and the two controls end up together on the right. */
+  .brand-badge {
+    flex: 1 1 auto;
+  }
+  .header-actions {
+    margin-left: 0;
+  }
+  .admin-login-link {
+    display: none;
+  }
+  .hero-section {
+    min-height: 520px;
+  }
+}
+
+/* Tablet — stack the two-column story section */
+@media (max-width: 900px) {
+  /* 3-up strip collapses straight to 1 column: a 2+1 split leaves an orphan card. */
+  .quick-info-strip {
+    grid-template-columns: 1fr;
+  }
+  /* 4-up actions step down to a balanced 2x2. */
+  .action-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .about-inner {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  .about-image-box {
+    min-height: 300px;
+  }
+  .gallery-masonry {
+    columns: 2;
+  }
+  .site-footer-inner {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding: 44px var(--site-gutter) 28px;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --site-gutter: 18px;
+    --section-gap: 56px;
+  }
+  .hero-section {
+    min-height: 460px;
+  }
+  .hero-content {
+    padding: 48px 20px 90px;
+  }
+  .quick-info-strip {
+    margin-top: -48px;
+    gap: 14px;
+  }
+  .action-grid {
+    margin-top: 44px;
+    gap: 14px;
+  }
+  .events-grid {
+    grid-template-columns: 1fr;
+  }
+  .stat-grid {
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+}
+
+/* Large phone and below */
+@media (max-width: 640px) {
+  :root {
+    --site-gutter: 16px;
+    --section-gap: 48px;
+  }
+  .site-header-inner {
+    padding-block: 12px;
+    gap: 12px;
+  }
+  /* The whole point of the masthead is the temple's name, so on a phone the
+     name gets the width and everything else gives way: measured at 390px it
+     needs 167px and had only 129px, while Donate's label and the Telugu
+     subtitle were together holding ~160px it could have used. */
+  .brand-title {
+    font-size: 13.5px;
+    white-space: nowrap;
+  }
+  .brand-badge {
+    flex: 1 1 auto;
+    min-width: 0;
+    gap: 8px;
+  }
+  .nav-toggle {
+    flex-shrink: 0;
+  }
+  .header-actions {
+    flex-shrink: 0;
+    gap: 8px;
+  }
+  /* Icon-only Donate: the label is the widest thing competing with the name,
+     and the emblem alone still reads as the donate action. */
+  .btn-donate-label {
+    display: none;
+  }
+  .btn-donate {
+    padding-inline: 14px;
+  }
+  /* The subtitle is the first thing to go: it repeats the Telugu name and the
+     state, neither of which a devotee needs in the masthead on a phone. */
+  .brand-subtitle {
+    display: none;
+  }
+  .brand-emblem {
+    width: 38px;
+    height: 38px;
+    font-size: 16px;
+  }
+  .gallery-masonry {
+    columns: 1;
+  }
+  .hero-section {
+    min-height: 420px;
+  }
+  .hero-telugu {
+    font-size: 14px;
+    letter-spacing: 1.2px;
+  }
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0 8px;
+  }
+  .hero-actions .btn {
+    width: 100%;
+  }
+  .quick-info-strip,
+  .action-grid {
+    grid-template-columns: 1fr;
+  }
+  .info-card {
+    padding: 20px;
+  }
+  .stat-grid {
+    gap: 20px;
+  }
+  .stat-number {
+    font-size: 28px;
+  }
+}
+
+/* Small phone — 390px and narrower */
+@media (max-width: 400px) {
+  .header-actions .btn-saffron {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+  .hero-content {
+    padding: 40px 16px 80px;
+  }
+}
+
+/* The smallest-phone masthead rules live near the end of this file, after the
+   second max-width:400px block, so that block's .brand-title cannot override
+   them. Search for "Smallest phones". */
+
+/* =========================================================
+   HISTORY, EVIDENCE AND SOURCE ARCHIVE
+   Added for the Old Somalamma Temple historical archive.
+
+   The badge colours carry meaning, so they are ordered by how
+   settled a claim is: verified reads as calm and confident,
+   unverified as open and provisional. Nothing here is allowed
+   to make an unverified claim look established - that is the
+   single rule these styles exist to hold.
+   ========================================================= */
+
+/* --- Evidence badges --------------------------------------------- */
+.source-badge-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.source-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+/* Settled: quiet and confident. */
+.source-badge-verified {
+  background: rgba(46, 105, 70, 0.12);
+  color: #1F5138;
+  border-color: rgba(46, 105, 70, 0.35);
+}
+
+/* Reported by someone identifiable, but not confirmed. */
+.source-badge-sourced {
+  background: var(--color-gold-tint);
+  color: #6B5218;
+  border-color: var(--color-gold-border);
+}
+
+.source-badge-partial {
+  background: rgba(217, 119, 43, 0.12);
+  color: #8A4715;
+  border-color: rgba(217, 119, 43, 0.32);
+}
+
+/* Remembered rather than recorded: deliberately soft, never
+   dressed up to look like documentation. */
+.source-badge-tradition {
+  background: rgba(110, 31, 42, 0.08);
+  color: var(--color-maroon-primary);
+  border-color: rgba(110, 31, 42, 0.28);
+}
+
+/* Open question. Outlined and uncoloured so it reads as
+   provisional at a glance. */
+.source-badge-unverified {
+  background: transparent;
+  color: #6B6B6B;
+  border-color: #C9C1B2;
+  border-style: dashed;
+}
+
+.source-badge-disputed {
+  background: transparent;
+  color: #8A2020;
+  border-color: rgba(138, 32, 32, 0.5);
+  border-style: dashed;
+}
+
+.source-badge-attribution {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+/* --- Badge legend ------------------------------------------------- */
+.source-legend {
+  background: var(--color-ivory-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin: 0 0 32px;
+}
+
+.source-legend-title {
+  font-weight: 700;
+  margin: 0 0 12px;
+  color: var(--color-maroon-primary);
+}
+
+.source-legend-list {
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.source-legend-row {
+  display: grid;
+  grid-template-columns: minmax(140px, max-content) 1fr;
+  gap: 12px;
+  align-items: baseline;
+}
+
+.source-legend-row dt { margin: 0; }
+
+.source-legend-row dd {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+/* --- History entries ---------------------------------------------- */
+.history-sections {
+  display: grid;
+  gap: 28px;
+  margin-bottom: 48px;
+}
+
+.history-entry {
+  background: var(--color-ivory-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-left: 3px solid var(--color-gold);
+  border-radius: 12px;
+  padding: 24px 26px;
+}
+
+.history-period {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-gold);
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+
+.history-entry-title {
+  font-family: var(--font-display);
+  font-size: 1.55rem;
+  color: var(--color-maroon-primary);
+  margin: 0 0 12px;
+}
+
+.history-entry-body {
+  line-height: 1.75;
+  color: var(--color-text-primary);
+  margin: 0 0 14px;
+}
+
+.history-entry-telugu {
+  font-family: var(--font-telugu);
+  line-height: 1.9;
+}
+
+.history-entry-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.history-source-link {
+  font-size: 0.85rem;
+  color: var(--color-maroon-primary);
+}
+
+/* --- Timeline ------------------------------------------------------
+   A single vertical rail at every width. A horizontal timeline that
+   reflows into a vertical one on small screens tends to break; this
+   is vertical everywhere and simply tightens up on narrow screens. */
+.history-timeline-section { margin: 48px 0; }
+
+.history-timeline {
+  list-style: none;
+  margin: 24px 0 0;
+  padding: 0 0 0 28px;
+  border-left: 2px solid var(--color-gold-border);
+}
+
+.timeline-item {
+  position: relative;
+  padding: 0 0 32px 8px;
+}
+
+.timeline-item:last-child { padding-bottom: 0; }
+
+.timeline-marker {
+  position: absolute;
+  left: -36px;
+  top: 6px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-gold);
+  border: 2px solid var(--color-cream-bg);
+}
+
+.timeline-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  margin: 0 0 4px;
+}
+
+.timeline-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--color-maroon-primary);
+  margin: 0 0 8px;
+}
+
+.timeline-body {
+  line-height: 1.7;
+  color: var(--color-text-muted);
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+}
+
+/* --- Inscriptions -------------------------------------------------- */
+.history-inscriptions { margin: 48px 0; }
+
+.inscription-card {
+  background: var(--color-sand-card);
+  border: 1px solid var(--color-gold-border);
+  border-radius: 12px;
+  padding: 24px 26px;
+  margin-bottom: 20px;
+}
+
+.inscription-title {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  color: var(--color-maroon-primary);
+  margin: 0 0 14px;
+}
+
+.inscription-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin: 0 0 16px;
+}
+
+.inscription-facts dt {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  margin-bottom: 2px;
+}
+
+.inscription-facts dd {
+  margin: 0;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.inscription-body,
+.inscription-transcription {
+  line-height: 1.75;
+  margin: 0 0 14px;
+}
+
+.inscription-reading {
+  background: var(--color-ivory-surface);
+  border-radius: 8px;
+  padding: 16px 18px;
+  margin-bottom: 14px;
+}
+
+.inscription-reading h4 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-gold);
+  margin: 0 0 6px;
+}
+
+/* An unread inscription. Reads as outstanding work, not as content. */
+.inscription-pending {
+  font-style: italic;
+  color: var(--color-text-muted);
+  border-left: 2px dashed #C9C1B2;
+  padding-left: 14px;
+  margin: 0 0 14px;
+}
+
+/* --- What remains to be verified ----------------------------------- */
+.history-outstanding {
+  background: var(--color-ivory-surface);
+  border: 1px dashed #C9C1B2;
+  border-radius: 12px;
+  padding: 26px 28px;
+  margin: 48px 0;
+}
+
+.outstanding-list {
+  list-style: none;
+  margin: 18px 0 24px;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+
+.outstanding-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  line-height: 1.6;
+}
+
+.outstanding-invite { margin: 0; }
+
+/* --- Source archive ------------------------------------------------ */
+.sources-group { margin-bottom: 40px; }
+
+.sources-list {
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 16px;
+}
+
+.source-card {
+  background: var(--color-ivory-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 12px;
+  padding: 20px 22px;
+}
+
+.source-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.source-kind {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.source-card-title {
+  font-size: 1.05rem;
+  color: var(--color-maroon-primary);
+  margin: 0 0 8px;
+  line-height: 1.5;
+}
+
+.source-card-detail {
+  font-size: 0.92rem;
+  line-height: 1.7;
+  color: var(--color-text-primary);
+  margin: 0 0 10px;
+}
+
+.source-card-meta {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin: 0;
+  word-break: break-word;
+}
+
+.sources-back { margin-top: 32px; }
+
+/* --- About page ---------------------------------------------------- */
+.about-section { margin-bottom: 44px; }
+
+.about-lead {
+  font-size: 1.08rem;
+  line-height: 1.85;
+  color: var(--color-text-primary);
+  max-width: 70ch;
+}
+
+.about-body {
+  line-height: 1.75;
+  color: var(--color-text-primary);
+  max-width: 70ch;
+}
+
+.about-deity-telugu {
+  font-family: var(--font-telugu);
+  font-size: 1.4rem;
+  color: var(--color-maroon-primary);
+  margin: 0 0 12px;
+}
+
+.page-title-telugu {
+  font-family: var(--font-telugu);
+  font-size: 1.3rem;
+  color: var(--color-gold);
+  margin: 6px 0 0;
+}
+
+.about-history-card {
+  border-left: 3px solid var(--color-gold-border);
+  padding-left: 18px;
+  margin-bottom: 24px;
+}
+
+.about-history-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--color-maroon-primary);
+  margin: 0 0 8px;
+}
+
+.about-subtitle {
+  font-size: 1.05rem;
+  color: var(--color-maroon-primary);
+  margin: 28px 0 10px;
+}
+
+.about-contact-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.about-pending {
+  font-style: italic;
+  color: var(--color-text-muted);
+}
+
+.about-more { margin-top: 24px; }
+
+.section-intro {
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  max-width: 70ch;
+  margin: 0 0 18px;
+}
+
+/* --- Narrow screens ------------------------------------------------ */
+@media (max-width: 640px) {
+  .history-entry,
+  .inscription-card,
+  .history-outstanding,
+  .source-card {
+    padding: 18px 16px;
+  }
+
+  .history-timeline { padding-left: 20px; }
+
+  .timeline-marker {
+    left: -27px;
+    width: 10px;
+    height: 10px;
+  }
+
+  /* Stack the legend: two columns are unreadable at this width. */
+  .source-legend-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .history-entry-title { font-size: 1.3rem; }
+  .inscription-facts { grid-template-columns: 1fr; }
+
+  .source-card-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* --- Very narrow screens (small Android phones, 320px) --------------
+   Pre-existing site-wide issue: .page-title has a 32px clamp floor, so a
+   long temple name could not shrink far enough and pushed the page
+   sideways. Titles now scale down and long words wrap rather than
+   forcing horizontal scroll. Applies to every page, not just history. */
+@media (max-width: 400px) {
+  .page-title {
+    font-size: clamp(24px, 7.5vw, 32px);
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+
+  .page-subtitle,
+  .section-title,
+  .history-entry-title,
+  .timeline-title,
+  .source-card-title {
+    overflow-wrap: break-word;
+  }
+
+  .brand-title { font-size: 12.5px; }
+  .brand-subtitle { font-size: 0.72rem; }
+}
+
+/* Smallest phones — the last of the width goes to the temple's name.
+   Everything else in the masthead steps down rather than letting the name the
+   masthead exists to display be cut off with an ellipsis. This must stay
+   after the max-width:400px block above, which also sets .brand-title. */
+@media (max-width: 380px) {
+  .brand-title {
+    font-size: 11.5px;
+  }
+  .brand-emblem {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+  .site-header-inner {
+    gap: 8px;
+  }
+  .header-actions .btn-saffron {
+    padding: 10px 11px;
+  }
+}
+
+/* Nothing may push the page sideways at any width. */
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* =========================================================
+   PHASE 6 — festival archive, provenance markers
+   ========================================================= */
+
+/* --- Festival archive on the history page ------------------------- */
+.history-festivals { margin: 48px 0; }
+
+.festival-year-list {
+  list-style: none;
+  margin: 24px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 18px;
+}
+
+.festival-year-card {
+  background: var(--color-ivory-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-top: 3px solid var(--color-gold);
+  border-radius: 12px;
+  padding: 20px 22px;
+}
+
+.festival-year-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.festival-year {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--color-maroon-primary);
+  line-height: 1;
+}
+
+.festival-year-name {
+  font-size: 1.05rem;
+  color: var(--color-text-primary);
+  margin: 0 0 4px;
+  line-height: 1.4;
+}
+
+.festival-year-telugu {
+  font-family: var(--font-telugu);
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  margin: 0 0 8px;
+}
+
+.festival-year-body {
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: var(--color-text-primary);
+  margin: 0 0 10px;
+}
+
+/* Undated years say so rather than borrowing another year's schedule. */
+.festival-year-dates {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+  margin: 0;
+}
+
+/* --- Sources and contribute calls to action ----------------------- */
+.history-sources-cta,
+.history-contribute {
+  margin: 48px 0;
+  padding: 26px 28px;
+  background: var(--color-sand-alt);
+  border-radius: 12px;
+}
+
+.history-contribute {
+  background: var(--color-sand-card);
+  border: 1px solid var(--color-gold-border);
+}
+
+/* --- Gallery provenance -------------------------------------------
+   Deliberately quiet. It appears only on photographs that actually
+   carry provenance, so an ordinary temple photograph shows nothing
+   and the marker keeps its meaning. */
+.gallery-provenance {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--color-maroon-primary);
+  border: 1px solid var(--color-gold-border);
+  border-radius: 999px;
+  padding: 2px 9px;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.gallery-provenance-detail {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  padding: 6px 4px 0;
+  line-height: 1.5;
+}
+
+/* --- Video provenance --------------------------------------------- */
+.video-provenance {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin: 6px 0 0;
+  line-height: 1.5;
+}
+
+/* --- Narrow screens ------------------------------------------------ */
+@media (max-width: 640px) {
+  .festival-year-list { grid-template-columns: 1fr; }
+
+  .history-sources-cta,
+  .history-contribute {
+    padding: 18px 16px;
+  }
+
+  .festival-year-card { padding: 16px 16px; }
+}

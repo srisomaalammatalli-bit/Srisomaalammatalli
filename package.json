@@ -1,0 +1,28 @@
+{
+  "name": "somalamma-thalli-temple",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "migrate": "node database/migrate.js",
+    "seed": "node database/seed.js",
+    "seed:history": "node database/seed_history.js",
+    "import:assets": "node database/import_assets.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie": "^1.0.2",
+    "pg": "^8.13.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^6.0.1"
+  }
+}
