@@ -162,8 +162,11 @@ export async function getPool() {
       ? false
       : { rejectUnauthorized: process.env.DATABASE_REJECT_UNAUTHORIZED === 'true' };
 
+  // Strip sslmode from connectionString so pg-connection-string does not force rejectUnauthorized: true
+  const cleanConnectionString = connectionString.replace(/[?&]sslmode=[^&]+/i, '');
+
   pool = new Pool({
-    connectionString,
+    connectionString: cleanConnectionString,
     ssl: sslConfig,
     max: 5, // Aiven Free Tier: keep the pool small
     idleTimeoutMillis: 30000,
