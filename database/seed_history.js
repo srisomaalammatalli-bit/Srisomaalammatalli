@@ -187,7 +187,7 @@ const FESTIVALS = [];
  * ------------------------------------------------------------------ */
 
 const SETTINGS = [
-  ['temple_name', 'Srisomaalammatalli Temple'],
+  ['temple_name', 'Sri Somaalamma Talli Temple'],
   ['temple_name_telugu', 'శ్రీ సోమాలమ్మ తల్లి దేవాలయం'],
   ['temple_deity', 'Sri Somalamma Thalli'],
   ['temple_deity_telugu', 'శ్రీ సోమాలమ్మ తల్లి'],
@@ -200,7 +200,7 @@ const SETTINGS = [
   ['temple_country', 'India'],
   [
     'temple_address',
-    'Srisomaalammatalli Temple, Munjavarapu Kottu, Mungandapalem, P. Gannavaram Mandal, Dr. B. R. Ambedkar Konaseema District, Andhra Pradesh 533214'
+    'Sri Somaalamma Talli Temple, Munjavarapu Kottu, Mungandapalem, P. Gannavaram Mandal, Dr. B. R. Ambedkar Konaseema District, Andhra Pradesh 533214'
   ],
   ['temple_address_telugu', ''],
   // Third-party listing figures, kept editable and labelled as such on the

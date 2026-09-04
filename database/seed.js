@@ -72,9 +72,9 @@ function financialYears() {
 
 /** Verified temple details supplied by the administrator. */
 const SETTINGS = [
-  ['temple_name', 'Srisomaalammatalli Temple'],
+  ['temple_name', 'Sri Somaalamma Talli Temple'],
   ['temple_name_telugu', 'శ్రీ సోమలమ్మ తల్లి దేవస్థానం'],
-  ['temple_address', 'Srisomaalammatalli Temple, Munjavarapu Kottu, Mungandapalem, P. Gannavaram Mandal, Dr. B. R. Ambedkar Konaseema District, Andhra Pradesh 533214'],
+  ['temple_address', 'Sri Somaalamma Talli Temple, Munjavarapu Kottu, Mungandapalem, P. Gannavaram Mandal, Dr. B. R. Ambedkar Konaseema District, Andhra Pradesh 533214'],
   ['temple_city', 'P. Gannavaram Mandal'],
   ['temple_state', 'Andhra Pradesh'],
   ['temple_pincode', '533214'],

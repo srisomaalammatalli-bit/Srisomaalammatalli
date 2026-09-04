@@ -12,9 +12,9 @@
  */
 
 export const TEMPLE = Object.freeze({
-  name: 'Srisomaalammatalli Temple',
+  name: 'Sri Somaalamma Talli Temple',
   nameTelugu: 'శ్రీ సోమాలమ్మ తల్లి దేవాలయం',
-  shortName: 'Srisomaalammatalli',
+  shortName: 'Sri Somaalamma Talli',
   deity: 'Sri Somalamma Thalli',
   deityTelugu: 'శ్రీ సోమాలమ్మ తల్లి',
 

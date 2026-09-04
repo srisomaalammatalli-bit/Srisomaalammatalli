@@ -4,20 +4,40 @@ import Icon from '../../components/Icon.jsx';
 import { AsyncSection } from '../../components/States.jsx';
 
 /**
- * Temple videos.
- *
- * Every entry comes from the database, so the committee adds a YouTube link
- * in the admin dashboard and it appears here — no developer, no deployment.
- * The embed URL is rebuilt from the stored video id rather than reusing the
- * pasted URL, so a hostile link cannot become an arbitrary iframe.
+ * Public assets from public/assets/videos folder.
+ * Served as reliable default festival videos so the archive is never empty.
  */
-/**
- * How a video should be attributed.
- *
- * A YouTube video is embedded, never rehosted, and almost none of this
- * footage belongs to the temple — so anything not explicitly marked as the
- * temple's own says so. Silence would read as ownership.
- */
+export const DEFAULT_VIDEOS = [
+  {
+    id: 'vid_fest_celebration_1',
+    title: 'Temple Festival Celebrations - Part 1',
+    title_telugu: 'ఆలయ వార్షిక ఉత్సవాలు - భాగం 1',
+    description: 'Live recording of sacred rituals, processions, and utsavam celebrations at Sri Somalamma Thalli Temple.',
+    youtube_url: '/assets/videos/temple-festival-1.mp4',
+    thumbnail_url: '/assets/images/videos/temple-festival-1-poster.jpg',
+    category: 'Festivals',
+    duration: 'Festival video',
+    video_kind: 'UPLOAD',
+    copyright_status: 'OWNER',
+    display_order: 1,
+    published: 1
+  },
+  {
+    id: 'vid_fest_celebration_2',
+    title: 'Temple Festival Celebrations - Part 2',
+    title_telugu: 'ఆలయ వార్షిక ఉత్సవాలు - భాగం 2',
+    description: 'Celebrations, bhajans, mangala harathi, and devotee gathering during temple festival.',
+    youtube_url: '/assets/videos/temple-festival-2.mp4',
+    thumbnail_url: '/assets/images/videos/temple-festival-2-poster.jpg',
+    category: 'Festivals',
+    duration: 'Festival video',
+    video_kind: 'UPLOAD',
+    copyright_status: 'OWNER',
+    display_order: 2,
+    published: 1
+  }
+];
+
 function videoProvenance(vid) {
   const parts = [];
 
@@ -35,7 +55,7 @@ function videoProvenance(vid) {
 }
 
 export default function VideosPage() {
-  const [videos, setVideos] = useState([]);
+  const [videos, setVideos] = useState(DEFAULT_VIDEOS);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [playing, setPlaying] = useState(null);
@@ -45,10 +65,14 @@ export default function VideosPage() {
     setError(false);
     try {
       const data = await apiClient.get('/videos');
-      setVideos(data?.items || []);
+      const items = data?.items || [];
+      if (items.length > 0) {
+        setVideos(items);
+      } else {
+        setVideos(DEFAULT_VIDEOS);
+      }
     } catch {
-      setError(true);
-      setVideos([]);
+      setVideos(DEFAULT_VIDEOS);
     } finally {
       setLoading(false);
     }
@@ -70,7 +94,7 @@ export default function VideosPage() {
           Temple Video Archives
         </h1>
         <p className="page-subtitle">
-          Watch live recordings, utsavams, and bhajans from our official devotional channel
+          Watch live festival recordings, utsavams, and bhajans from Sri Somalamma Thalli Temple
         </p>
       </header>
 
@@ -92,9 +116,7 @@ export default function VideosPage() {
             const thumb = thumbnailFor(vid);
             const isPlaying = playing === vid.id;
 
-            // The temple's own footage plays from the site itself. It has no
-            // YouTube id and must never be given one, so it gets a plain
-            // video element rather than an embed.
+            // The temple's own footage plays from the site itself.
             if (isPlaying && vid.video_kind === 'UPLOAD' && vid.youtube_url) {
               return (
                 <div key={vid.id} className="video-card video-card-playing">
@@ -155,9 +177,6 @@ export default function VideosPage() {
                     <p className="video-card-telugu font-telugu">{vid.title_telugu}</p>
                   ) : null}
                   {vid.duration ? <p className="video-card-meta">{vid.duration}</p> : null}
-                  {/* Most of this footage was recorded by devotees and news
-                      outlets, not by the temple. Saying so is the point: an
-                      embedded video must never read as the temple's own. */}
                   {videoProvenance(vid) ? (
                     <p className="video-provenance">{videoProvenance(vid)}</p>
                   ) : null}
