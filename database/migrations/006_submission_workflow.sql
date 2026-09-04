@@ -41,7 +41,7 @@ ALTER TABLE historical_submissions ADD COLUMN material_type VARCHAR(60);
 -- Seeded as Unknown/false deliberately. Marking them verified is a decision
 -- for the temple administration, not a default.
 INSERT INTO settings (key, value)
-SELECT 'timings_source_type', 'Unknown'
+SELECT 'timings_source_type', '"Unknown"'
 WHERE NOT EXISTS (SELECT 1 FROM settings WHERE key = 'timings_source_type');
 
 INSERT INTO settings (key, value)

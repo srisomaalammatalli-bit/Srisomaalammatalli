@@ -367,11 +367,12 @@ async function main() {
   console.log(`  ✓ temple_festivals (${FESTIVALS.length}, 2021-2025)`);
 
   for (const [key, value] of SETTINGS) {
+    const jsonValue = JSON.stringify(value);
     const existing = await query('SELECT key FROM settings WHERE key = $1', [key]);
     if (existing.rows.length) {
-      await query('UPDATE settings SET value = $1 WHERE key = $2', [value, key]);
+      await query('UPDATE settings SET value = $1 WHERE key = $2', [jsonValue, key]);
     } else {
-      await query('INSERT INTO settings (key, value) VALUES ($1, $2)', [key, value]);
+      await query('INSERT INTO settings (key, value) VALUES ($1, $2)', [key, jsonValue]);
     }
   }
   console.log(`  ✓ settings (${SETTINGS.length})`);

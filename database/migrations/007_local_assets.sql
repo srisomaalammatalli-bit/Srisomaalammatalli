@@ -28,6 +28,10 @@
 -- Every other column keeps its original definition from migration 004.
 -- =========================================================
 
+-- @pg-only
+DROP TABLE IF EXISTS media_assets CASCADE;
+
+-- @sqlite-only
 DROP TABLE IF EXISTS media_assets;
 
 CREATE TABLE media_assets (

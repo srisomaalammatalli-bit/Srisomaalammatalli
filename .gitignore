@@ -44,3 +44,6 @@ data/
 
 # Local QA harness scripts
 .qa/
+
+# Scratch scripts
+scratch/

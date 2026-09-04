@@ -20,7 +20,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const API_DIR = path.join(__dirname, 'api');
+const API_DIR = path.join(__dirname, 'server');
 
 /** Read and JSON-parse the request body, mirroring Vercel's behaviour. */
 function readBody(req) {

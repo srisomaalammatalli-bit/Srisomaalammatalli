@@ -225,7 +225,7 @@ async function seed() {
 
   // 5. Site settings
   for (const [key, value] of SETTINGS) {
-    await upsert('settings', ['key', 'value'], [key, value], 'key', ['value']);
+    await upsert('settings', ['key', 'value'], [key, JSON.stringify(value)], 'key', ['value']);
   }
   console.log(`  ✓ settings (${SETTINGS.length})`);
 

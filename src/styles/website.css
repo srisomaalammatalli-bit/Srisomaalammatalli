@@ -614,14 +614,16 @@
 
 .about-image-title {
   font-family: var(--font-display);
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.7);
 }
 
 .about-image-sub {
   font-size: 12px;
   color: var(--color-gold-soft);
-  margin-top: 6px;
+  letter-spacing: 0.4px;
 }
 
 .about-telugu {
@@ -1064,17 +1066,44 @@
   align-items: center;
 }
 
+/* The About panel holds a photograph of Amma Vari rather than the emblem
+   placeholder it once showed. The picture is portrait (0.60), so the frame is
+   given a portrait aspect and the image fills it — cropping a little from a
+   tall photograph reads far better here than the letterboxing a wide frame
+   would force. */
 .about-image-box {
+  margin: 0;
   min-height: 420px;
   background: linear-gradient(135deg, #6E1F2A 0%, #3B1117 100%);
   border-radius: var(--radius-xl);
   overflow: hidden;
   box-shadow: var(--shadow-lg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   color: var(--color-gold-soft);
   position: relative;
+}
+
+.about-image-box img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 420px;
+  object-fit: cover;
+  /* The goddess sits high in the frame — crown, face, garlands — so the crop
+     is taken from the upper part rather than the middle. */
+  object-position: 50% 18%;
+}
+
+/* The caption sits over the foot of the picture, on a gradient dark enough to
+   keep gold type legible whatever the photograph does underneath it. */
+.about-image-caption {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 46px 20px 18px;
+  text-align: center;
+  background: linear-gradient(180deg, rgba(26, 7, 10, 0) 0%, rgba(26, 7, 10, 0.85) 62%);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
 .stat-grid {

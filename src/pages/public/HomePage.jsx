@@ -227,19 +227,20 @@ export default function HomePage() {
       {/* About & Story Section */}
       <section className="about-section">
         <div className="about-inner">
-          <div className="about-image-box">
-            <div className="about-image-inner">
-              <div className="brand-emblem brand-emblem-lg">
-                శ్రీ
-              </div>
-              <div className="about-image-title">
-                Sri Somalamma Talli Sanctum
-              </div>
-              <div className="about-image-sub">
-                Centuries of Faith & Community Harmony
-              </div>
-            </div>
-          </div>
+          <figure className="about-image-box">
+            <img
+              src="/assets/images/deity/somalamma-talli-alankaram.jpg"
+              alt="Sri Somalamma Talli in alankaram, garlanded with marigold"
+              loading="lazy"
+            />
+            <figcaption className="about-image-caption">
+              <span className="about-image-title">Sri Somalamma Talli</span>
+              {/* No age is claimed here. The temple's own history is not
+                  documented, and "Centuries of Faith" would be a founding
+                  claim on the front page that no source supports. */}
+              <span className="about-image-sub">Amma Vari alankaram</span>
+            </figcaption>
+          </figure>
 
           <div>
             <p className="section-eyebrow">
