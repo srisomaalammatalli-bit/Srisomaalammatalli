@@ -70,6 +70,19 @@ export default function AdminExpenses() {
     setShowAddModal(false);
   };
 
+  const handleDeleteExpense = async (exp) => {
+    const title = exp.title || 'Expense';
+    const amt = formatINR(exp.amount);
+    if (!window.confirm(`Are you sure you want to delete expense "${title}" (${amt})?`)) {
+      return;
+    }
+    try {
+      await adminStore.deleteExpense(exp.id);
+    } catch (err) {
+      alert('Failed to delete expense: ' + (err.message || 'Server error'));
+    }
+  };
+
   const markAsVerified = (expId) => {
     const updated = store.expenses.map(exp => {
       if (exp.id === expId) {
@@ -265,19 +278,31 @@ export default function AdminExpenses() {
                         </span>
                       )}
                     </td>
-                    <td style={{ textAlign: 'right' }}>
-                      {e.status === 'Missing' ? (
+                    <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                      {e.status === 'Missing' && (
                         <button
                           type="button"
                           onClick={() => markAsVerified(e.id)}
                           className="btn btn-outline"
-                          style={{ fontSize: '11px', padding: '4px 8px', color: 'var(--color-success)', borderColor: 'var(--color-success)' }}
+                          style={{ fontSize: '11px', padding: '4px 8px', color: 'var(--color-success)', borderColor: 'var(--color-success)', marginRight: '6px' }}
                         >
                           + Verify Bill
                         </button>
-                      ) : (
-                        <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>Verified</span>
                       )}
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteExpense(e)}
+                        className="btn btn-outline"
+                        style={{
+                          fontSize: '11px',
+                          padding: '4px 8px',
+                          color: 'var(--color-danger, #A32A2A)',
+                          borderColor: 'var(--color-danger, #A32A2A)'
+                        }}
+                        title="Delete expense record"
+                      >
+                        🗑 Delete
+                      </button>
                     </td>
                   </tr>
                 ))

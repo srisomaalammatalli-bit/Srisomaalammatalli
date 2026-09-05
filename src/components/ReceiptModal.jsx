@@ -144,7 +144,7 @@ export default function ReceiptModal({ receipt, onClose }) {
               <div style={{ fontSize: '11px', color: 'var(--color-text-muted, #6B6B6B)', textTransform: 'uppercase', letterSpacing: '0.8px', fontWeight: 600 }}>
                 Mobile
               </div>
-              <div style={{ fontWeight: 600 }}>{maskMobile(mobile)}</div>
+              <div style={{ fontWeight: 600 }}>{mobile || '—'}</div>
             </div>
 
             <div>

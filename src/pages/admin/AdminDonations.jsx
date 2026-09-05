@@ -78,6 +78,21 @@ export default function AdminDonations() {
     setSelectedReceipt(newDon);
   };
 
+  const handleDeleteDonation = async (d) => {
+    const rNo = d.receiptNo || d.receipt_no || '';
+    const name = d.donorName || d.donor_name || 'Devotee';
+    const amt = formatINR(d.amount);
+    if (!window.confirm(`Are you sure you want to delete donation ${rNo} (${amt}) by ${name}?`)) {
+      return;
+    }
+
+    try {
+      await adminStore.deleteDonation(d.id);
+    } catch (err) {
+      alert('Failed to delete donation: ' + (err.message || 'Server error'));
+    }
+  };
+
   const exportCSV = () => {
     const headers = ['Receipt No', 'Donor Name', 'Mobile', 'Category', 'Amount', 'Payment Method', 'Date', 'Status'];
     const rows = donations.map(d => [
@@ -237,7 +252,7 @@ export default function AdminDonations() {
                       {d.receiptNo}
                     </td>
                     <td style={{ fontWeight: 600 }}>{d.donorName}</td>
-                    <td style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>{maskMobile(d.mobile)}</td>
+                    <td style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)' }}>{d.mobile || '—'}</td>
                     <td>
                       <span style={{ fontSize: '12px', background: 'rgba(184, 145, 70, 0.12)', color: 'var(--color-maroon-primary)', padding: '2px 8px', borderRadius: '10px', fontWeight: 600 }}>
                         {d.category}
@@ -262,14 +277,28 @@ export default function AdminDonations() {
                         {d.status}
                       </span>
                     </td>
-                    <td style={{ textAlign: 'right' }}>
+                    <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                       <button
                         type="button"
                         onClick={() => setSelectedReceipt(d)}
                         className="btn btn-outline"
-                        style={{ fontSize: '12px', padding: '4px 10px' }}
+                        style={{ fontSize: '12px', padding: '4px 10px', marginRight: '6px' }}
                       >
                         🖨 Receipt
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteDonation(d)}
+                        className="btn btn-outline"
+                        style={{
+                          fontSize: '12px',
+                          padding: '4px 10px',
+                          color: 'var(--color-danger, #A32A2A)',
+                          borderColor: 'var(--color-danger, #A32A2A)'
+                        }}
+                        title="Delete donation record"
+                      >
+                        🗑 Delete
                       </button>
                     </td>
                   </tr>

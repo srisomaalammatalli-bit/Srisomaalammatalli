@@ -41,10 +41,41 @@ function emptyState() {
   };
 }
 
+function normalizeDonation(d) {
+  if (!d) return d;
+  return {
+    ...d,
+    receiptNo: d.receiptNo || d.receipt_no || '',
+    donorName: d.donorName || d.donor_name || 'Devotee',
+    mobile: d.mobile || '',
+    category: d.category || 'General Donation',
+    amount: Number(d.amount || 0),
+    paymentMethod: d.paymentMethod || d.payment_method || 'UPI',
+    paymentDate: d.paymentDate || d.payment_date || d.created_at || '',
+    txnRef: d.txnRef || d.txn_ref || '',
+    fy: d.fy || d.financial_year_id || ''
+  };
+}
+
+function normalizeExpense(e) {
+  if (!e) return e;
+  return {
+    ...e,
+    title: e.title || '',
+    paidTo: e.paidTo || e.paid_to || '',
+    amount: Number(e.amount || 0),
+    expenseDate: e.expenseDate || e.expense_date || e.created_at || '',
+    paymentMethod: e.paymentMethod || e.payment_method || 'UPI',
+    receiptUrl: e.receiptUrl || e.receipt_url || '',
+    category: e.category || e.category_id || '',
+    fy: e.fy || e.financial_year_id || ''
+  };
+}
+
 /** Endpoints fetched for the admin workspace, and where each result lands. */
 const SOURCES = [
-  { key: 'donations', path: '/donations', pick: (d) => d.donations || d.items || [] },
-  { key: 'expenses', path: '/expenses', pick: (d) => d.expenses || d.items || [] },
+  { key: 'donations', path: '/donations', pick: (d) => (d.donations || d.items || []).map(normalizeDonation) },
+  { key: 'expenses', path: '/expenses', pick: (d) => (d.expenses || d.items || []).map(normalizeExpense) },
   { key: 'events', path: '/events', pick: (d) => d.events || d.items || [] },
   { key: 'gallery', path: '/gallery', pick: (d) => d.items || [] },
   { key: 'videos', path: '/videos', pick: (d) => d.items || [] },
