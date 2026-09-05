@@ -68,17 +68,11 @@ export default function PublicLayout() {
       ? `Darshan ${hoursRange}`
       : `${listingNote}: ${hoursRange}`;
 
-  // Notices the committee has published and marked for the ticker. They lead,
-  // because a closure or festival announcement is the thing a devotee most
-  // needs to see; the standing facts follow.
-  const tickerItems = [
-    ...notices.map((n) => n.title),
-    hoursItem,
-    TEMPLE.timings.note,
-    `${templeName}, ${templeCity}`
-  ].filter(Boolean);
-  // Repeat so the marquee loops without a visible gap.
-  const ticker = [...tickerItems, ...tickerItems, ...tickerItems];
+  // Notices the committee has published and marked for the ticker.
+  // Devotees only see what the administration creates and manages in the admin portal.
+  const tickerItems = notices.map((n) => n.title).filter(Boolean);
+  // Repeat so the marquee loops smoothly without a visible gap.
+  const ticker = tickerItems.length > 0 ? [...tickerItems, ...tickerItems, ...tickerItems] : [];
 
   // Close the mobile drawer whenever the route changes.
   useEffect(() => {
@@ -186,13 +180,15 @@ export default function PublicLayout() {
       </header>
 
       {/* Marquee Announcement Ticker */}
-      <div className="announcement-ticker no-print" role="region" aria-label="Temple announcements">
-        <div className="ticker-track">
-          {ticker.map((item, i) => (
-            <span className="ticker-item" key={`${item}-${i}`}>✦ {item}</span>
-          ))}
+      {ticker.length > 0 && (
+        <div className="announcement-ticker no-print" role="region" aria-label="Temple announcements">
+          <div className="ticker-track">
+            {ticker.map((item, i) => (
+              <span className="ticker-item" key={`${item}-${i}`}>✦ {item}</span>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Main Page View Outlet */}
       <div id="main-content" className="site-main">
