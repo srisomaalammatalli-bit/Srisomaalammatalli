@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { query, withTransaction } from '../_lib/db.js';
+import { query, transaction } from '../_lib/db.js';
 import { sendSuccess, sendError, sendBadRequest } from '../_lib/response.js';
 import { getAuthenticatedUser } from '../_lib/auth.js';
 import { logAudit } from '../_lib/audit.js';
@@ -59,7 +59,7 @@ export default async function handler(req, res) {
       const year = new Date().getFullYear();
       const receiptNo = `BAT-${year}-${Math.floor(1000 + Math.random() * 9000)}`;
 
-      const createdRecord = await withTransaction(async (client) => {
+      const createdRecord = await transaction(async (client) => {
         // 1. Insert into donations table
         const insertRes = await client.query(
           `INSERT INTO donations (id, receipt_no, donor_name, mobile, email, address, category, amount, payment_method, txn_ref, notes, status, created_by)
@@ -129,7 +129,7 @@ export default async function handler(req, res) {
 
       const record = existing.rows[0];
 
-      await withTransaction(async (client) => {
+      await transaction(async (client) => {
         await client.query('DELETE FROM donation_receipts WHERE donation_id = $1', [id]);
         await client.query('DELETE FROM donations WHERE id = $1', [id]);
 

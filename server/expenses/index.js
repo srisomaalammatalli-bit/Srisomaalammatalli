@@ -59,6 +59,25 @@ export default async function handler(req, res) {
       const expenseId = 'exp_' + crypto.randomBytes(12).toString('hex');
       const finalStatus = receiptUrl ? 'Verified' : (status || 'Missing');
 
+      // Map common category names or default to exp_other to satisfy FK constraint
+      const categoryMap = {
+        'pooja': 'exp_pooja',
+        'pooja materials': 'exp_pooja',
+        'pooja & rituals': 'exp_pooja',
+        'maintenance': 'exp_maintenance',
+        'temple maintenance': 'exp_maintenance',
+        'festival': 'exp_festival',
+        'festivals & utsavams': 'exp_festival',
+        'annadanam': 'exp_annadanam',
+        'utilities': 'exp_utilities',
+        'salaries': 'exp_salaries',
+        'staff & honorarium': 'exp_salaries',
+        'other': 'exp_other',
+        'other expenses': 'exp_other'
+      };
+      const rawCat = String(req.body?.category || categoryId || '').toLowerCase().trim();
+      const validCategoryId = rawCat.startsWith('exp_') ? rawCat : (categoryMap[rawCat] || 'exp_other');
+
       const result = await query(
         `INSERT INTO expenses (id, title, category_id, amount, paid_to, payment_method, description, receipt_url, status, created_by)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
@@ -66,7 +85,7 @@ export default async function handler(req, res) {
         [
           expenseId,
           title.trim(),
-          categoryId || 'other',
+          validCategoryId,
           numAmount,
           paidTo.trim(),
           paymentMethod || 'UPI',
