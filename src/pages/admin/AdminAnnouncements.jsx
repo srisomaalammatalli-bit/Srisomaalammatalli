@@ -145,14 +145,14 @@ const COLUMNS = [
 export default function AdminAnnouncements() {
   return (
     <AdminRecordScreen
-      title="Notices"
-      description="Announcements, festival notices and closures. A published notice appears on the site straight away, and stops showing by itself once its end time passes."
+      title="Scrolling Ticker & Notices"
+      description="Manage announcements and the live scrolling marquee ticker shown at the top of the website. Any notice marked 'Show in the header ticker' appears live on the public scrolling notification banner."
       endpoint="/announcements"
-      addLabel="+ Write a notice"
+      addLabel="+ Add Ticker Announcement"
       fields={FIELDS}
       columns={COLUMNS}
-      emptyTitle="No notices yet."
-      emptyMessage="Write a notice to tell devotees about a festival, a closure or anything else."
+      emptyTitle="No ticker announcements yet."
+      emptyMessage="Write an announcement to display it on the website header's scrolling ticker banner or homepage."
       deletePrompt="Delete this notice? It will be removed from the site."
       extraRowActions={(record, { toggleFlag }) => [
         {

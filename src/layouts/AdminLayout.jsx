@@ -35,7 +35,7 @@ export default function AdminLayout() {
         { label: 'Homepage', path: '/admin/homepage', icon: '⌂' },
         { label: 'Poojas', path: '/admin/poojas', icon: '🪔' },
         { label: 'Media Library', path: '/admin/media', icon: '🗂' },
-        { label: 'Notices', path: '/admin/announcements', icon: '📢' },
+        { label: 'Scrolling Ticker & Notices', path: '/admin/announcements', icon: '📢' },
         { label: 'Events', path: '/admin/events', icon: '📅' },
         { label: 'Gallery', path: '/admin/gallery', icon: '🖼' },
         { label: 'Videos', path: '/admin/videos', icon: '▶' },
