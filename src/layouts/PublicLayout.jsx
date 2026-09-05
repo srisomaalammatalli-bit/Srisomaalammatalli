@@ -97,7 +97,6 @@ export default function PublicLayout() {
     { label: 'Events', path: '/events' },
     { label: 'Gallery', path: '/gallery' },
     { label: 'Videos', path: '/videos' },
-    { label: 'Financial Transparency', path: '/transparency' },
     { label: 'Contact', path: '/contact' }
   ];
 
@@ -209,7 +208,7 @@ export default function PublicLayout() {
               <div className="footer-brand-name">Sri Somalamma Talli Temple</div>
             </div>
             <p className="footer-blurb">
-              A sacred village temple managed with devotion and complete financial transparency by a dedicated volunteer committee.
+              A sacred village temple managed with devotion and service by a dedicated volunteer committee.
             </p>
           </div>
 
@@ -218,7 +217,6 @@ export default function PublicLayout() {
             <div className="footer-links">
               <Link to="/events">Upcoming Events</Link>
               <Link to="/gallery">Devotional Gallery</Link>
-              <Link to="/transparency">Financial Transparency</Link>
               <Link to="/donate">Online Seva &amp; Donation</Link>
             </div>
           </nav>

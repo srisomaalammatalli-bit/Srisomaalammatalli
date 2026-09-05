@@ -10,7 +10,6 @@ import HomePage from './pages/public/HomePage.jsx';
 import EventsPage from './pages/public/EventsPage.jsx';
 import GalleryPage from './pages/public/GalleryPage.jsx';
 import VideosPage from './pages/public/VideosPage.jsx';
-import TransparencyPage from './pages/public/TransparencyPage.jsx';
 import ContactPage from './pages/public/ContactPage.jsx';
 import DonateWizard from './pages/public/DonateWizard.jsx';
 import PoojasPage from './pages/public/PoojasPage.jsx';
@@ -95,13 +94,12 @@ export default function App() {
             </Suspense>
           }
         />
-        {/* The transparency page has always lived at /transparency; the
-            longer path is kept working rather than moved. */}
-        <Route path="/financial-transparency" element={<Navigate to="/transparency" replace />} />
+        {/* Financial transparency is admin-only per committee policy; redirect public callers to home */}
+        <Route path="/financial-transparency" element={<Navigate to="/" replace />} />
+        <Route path="/transparency" element={<Navigate to="/" replace />} />
         <Route path="/events" element={<EventsPage />} />
         <Route path="/gallery" element={<GalleryPage />} />
         <Route path="/videos" element={<VideosPage />} />
-        <Route path="/transparency" element={<TransparencyPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/donate" element={<DonateWizard />} />
         <Route path="/poojas" element={<PoojasPage />} />

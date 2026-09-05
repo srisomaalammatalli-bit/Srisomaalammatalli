@@ -15,7 +15,6 @@ export default function HomePage() {
   const [dailyPoojas, setDailyPoojas] = useState([]);
   const [nextEvent, setNextEvent] = useState(null);
   const [sections, setSections] = useState([]);
-  const [summary, setSummary] = useState(null);
   const [heroSlides, setHeroSlides] = useState(null);
 
   // Poojas and the next event come from the database so the committee can
@@ -53,16 +52,6 @@ export default function HomePage() {
         if (!cancelled) setSections(data?.items || []);
       } catch {
         if (!cancelled) setSections([]);
-      }
-
-      // The teaser figures are the temple's actual accounts for the current
-      // financial year. If the report cannot be read the block says so rather
-      // than showing a number nobody recorded.
-      try {
-        const data = await apiClient.get('/reports');
-        if (!cancelled) setSummary(data?.summary || null);
-      } catch {
-        if (!cancelled) setSummary(null);
       }
 
       // Photographs the committee has marked "featured" become the hero
@@ -261,7 +250,7 @@ export default function HomePage() {
               history page.
             </p>
             <p className="about-para about-para-muted">
-              Managed completely by an elected volunteer committee, the temple operates with complete financial transparency where every single offering is receipted and accounted for.
+              Managed completely by an elected volunteer committee, the temple operates with dedication and service to the deity and devotees.
             </p>
 
             {/* No attendance count, founding year or committee headcount is
@@ -272,51 +261,6 @@ export default function HomePage() {
             </p>
           </div>
         </div>
-      </section>
-
-      {/* Financial Transparency Teaser */}
-      <section className="section-centered">
-        <p className="section-eyebrow">
-          Financial Transparency
-        </p>
-        <h2 className="section-title">
-          Your trust, fully accounted
-        </h2>
-        <p className="section-lede">
-          Aggregated temple finances are published for every devotee to review. Individual donor personal details are strictly preserved with complete privacy.
-        </p>
-
-        {summary ? (
-          <div className="figure-grid">
-            <div className="card-surface figure-card">
-              <div className="figure-label">TOTAL FUNDS RECEIVED</div>
-              <div className="figure-value figure-value-income">
-                {rupees(summary.totalIncome)}
-              </div>
-            </div>
-
-            <div className="card-surface figure-card">
-              <div className="figure-label">TOTAL EXPENSES</div>
-              <div className="figure-value figure-value-expense">
-                {rupees(summary.totalExpenses)}
-              </div>
-            </div>
-
-            <div className="info-card-maroon figure-card">
-              <div className="card-label">AVAILABLE BALANCE</div>
-              <div className="figure-value">{rupees(summary.balance)}</div>
-            </div>
-          </div>
-        ) : (
-          <p className="section-lede">
-            The accounts for the current financial year are being prepared and will be
-            published here.
-          </p>
-        )}
-
-        <Link to="/transparency" className="btn btn-outline">
-          View Full Financial Report →
-        </Link>
       </section>
     </main>
   );
