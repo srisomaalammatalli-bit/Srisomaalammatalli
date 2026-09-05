@@ -233,8 +233,16 @@ class AdminStore {
     return this.createThenRefresh('/donations', donation, (d) => d.donation);
   }
 
+  deleteDonation(id) {
+    return this.removeThenRefresh(`/donations?id=${encodeURIComponent(id)}`);
+  }
+
   addExpense(expense) {
     return this.createThenRefresh('/expenses', expense, (d) => d.expense);
+  }
+
+  deleteExpense(id) {
+    return this.removeThenRefresh(`/expenses?id=${encodeURIComponent(id)}`);
   }
 
   addEvent(event) {

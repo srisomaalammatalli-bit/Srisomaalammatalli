@@ -110,6 +110,47 @@ export default async function handler(req, res) {
     }
   }
 
-  res.setHeader('Allow', ['GET', 'POST']);
+  if (req.method === 'DELETE') {
+    try {
+      const user = await getAuthenticatedUser(req);
+      if (!user) {
+        return sendUnauthorized(res, 'Authentication required to remove donation records.');
+      }
+
+      const id = req.query?.id || req.body?.id;
+      if (!id) {
+        return sendBadRequest(res, 'Donation ID is required.');
+      }
+
+      const existing = await query('SELECT id, receipt_no, amount FROM donations WHERE id = $1', [id]);
+      if (existing.rows.length === 0) {
+        return sendBadRequest(res, 'Donation record not found.');
+      }
+
+      const record = existing.rows[0];
+
+      await withTransaction(async (client) => {
+        await client.query('DELETE FROM donation_receipts WHERE donation_id = $1', [id]);
+        await client.query('DELETE FROM donations WHERE id = $1', [id]);
+
+        await logAudit(client, {
+          userId: user.id,
+          userName: user.name,
+          action: 'Delete Donation',
+          entityType: 'Donation',
+          entityId: record.receipt_no || id,
+          metadata: { id, amount: record.amount },
+          req
+        });
+      });
+
+      return sendSuccess(res, { deleted: true, id }, 'Donation record removed successfully');
+    } catch (err) {
+      console.error('[Donations DELETE Error]', err);
+      return sendError(res, 'Failed to delete donation record.');
+    }
+  }
+
+  res.setHeader('Allow', ['GET', 'POST', 'DELETE']);
   return sendError(res, 'Method not allowed', 405);
 }

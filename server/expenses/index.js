@@ -94,6 +94,44 @@ export default async function handler(req, res) {
     }
   }
 
-  res.setHeader('Allow', ['GET', 'POST']);
+  if (req.method === 'DELETE') {
+    try {
+      const user = await getAuthenticatedUser(req);
+      if (!user) {
+        return sendUnauthorized(res, 'Authentication required to remove expense records.');
+      }
+
+      const id = req.query?.id || req.body?.id;
+      if (!id) {
+        return sendBadRequest(res, 'Expense ID is required.');
+      }
+
+      const existing = await query('SELECT id, title, amount FROM expenses WHERE id = $1', [id]);
+      if (existing.rows.length === 0) {
+        return sendBadRequest(res, 'Expense record not found.');
+      }
+
+      const record = existing.rows[0];
+
+      await query('DELETE FROM expenses WHERE id = $1', [id]);
+
+      await logAudit(query, {
+        userId: user.id,
+        userName: user.name,
+        action: 'Delete Expense',
+        entityType: 'Expense',
+        entityId: id,
+        metadata: { id, title: record.title, amount: record.amount },
+        req
+      });
+
+      return sendSuccess(res, { deleted: true, id }, 'Expense record removed successfully');
+    } catch (err) {
+      console.error('[Expenses DELETE Error]', err);
+      return sendError(res, 'Failed to delete expense record.');
+    }
+  }
+
+  res.setHeader('Allow', ['GET', 'POST', 'DELETE']);
   return sendError(res, 'Method not allowed', 405);
 }
