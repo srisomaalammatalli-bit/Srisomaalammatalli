@@ -130,7 +130,13 @@ export default async function handler(req, res) {
         // Administrators see every setting; the public sees the allow-list.
         if (user || PUBLIC_KEYS.has(row.key)) {
           if (!FORBIDDEN_KEYS.has(String(row.key).toLowerCase())) {
-            settings[row.key] = row.value;
+            let val = row.value;
+            if (typeof val === 'string' && (val.startsWith('"') || val.startsWith('{') || val.startsWith('['))) {
+              try {
+                val = JSON.parse(val);
+              } catch {}
+            }
+            settings[row.key] = val;
           }
         }
       }
@@ -176,11 +182,13 @@ export default async function handler(req, res) {
             ? ''
             : sanitizeString(String(rawValue), MAX_VALUE_LENGTH);
 
+        const jsonValue = JSON.stringify(value);
+
         await query(
           `INSERT INTO settings (key, value, updated_at)
            VALUES ($1, $2, CURRENT_TIMESTAMP)
            ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = CURRENT_TIMESTAMP`,
-          [key, value]
+          [key, jsonValue]
         );
         applied.push(key);
       }
