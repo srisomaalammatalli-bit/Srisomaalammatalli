@@ -22,10 +22,19 @@ const FIELDS = [
   {
     name: 'youtubeUrl',
     column: 'youtube_url',
-    label: 'YouTube address',
+    label: 'Video Link or YouTube address',
     required: true,
-    placeholder: 'https://www.youtube.com/watch?v=… or https://youtu.be/…',
-    hint: 'Paste the address from YouTube. Shorts and embed links work too — the video id is taken from it automatically.'
+    placeholder: 'https://www.youtube.com/watch?v=… or /assets/videos/…',
+    hint: 'Paste a YouTube link (shorts/embed/watch) or a video file URL.'
+  },
+  {
+    name: 'videoKind',
+    column: 'video_kind',
+    label: 'Source type',
+    type: 'select',
+    options: ['YOUTUBE', 'UPLOAD'],
+    default: 'YOUTUBE',
+    hint: 'Choose YOUTUBE for YouTube embeds, or UPLOAD for direct temple video files.'
   },
   { name: 'description', column: 'description', label: 'Description', type: 'textarea', rows: 3 },
   {
@@ -36,7 +45,7 @@ const FIELDS = [
     rows: 3,
     lang: 'te'
   },
-  { name: 'category', column: 'category', label: 'Category', placeholder: 'e.g. Festivals' },
+  { name: 'category', column: 'category', label: 'Category', default: 'Festivals', placeholder: 'e.g. Festivals' },
   {
     name: 'thumbnailUrl',
     column: 'thumbnail_url',

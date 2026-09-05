@@ -39,9 +39,12 @@ import templeInscriptionsHandler from '../server/temple/inscriptions/index.js';
 import templeSubmissionsHandler from '../server/temple/submissions/index.js';
 import timingsHandler from '../server/timings/index.js';
 import videosHandler from '../server/videos/index.js';
+import mediaFileHandler from '../server/media/file/index.js';
+import syncAssetsHandler from '../server/admin/sync-assets/index.js';
 
 const ROUTE_TABLE = [
   { prefix: 'health', handler: healthHandler },
+  { prefix: 'admin/sync-assets', handler: syncAssetsHandler },
   { prefix: 'admin/payments', handler: adminPaymentsHandler },
   { prefix: 'announcements', handler: announcementsHandler },
   { prefix: 'audit', handler: auditHandler },
@@ -61,6 +64,7 @@ const ROUTE_TABLE = [
   { prefix: 'jathara', handler: jatharaHandler },
   { prefix: 'land-chit', handler: landChitHandler },
   { prefix: 'media/upload', handler: mediaUploadHandler },
+  { prefix: 'media/file', handler: mediaFileHandler },
   { prefix: 'media', handler: mediaHandler },
   { prefix: 'online-donations', handler: onlineDonationsHandler },
   { prefix: 'payments', handler: paymentsHandler },
