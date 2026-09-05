@@ -20,7 +20,7 @@ export default function AdminDonations() {
   const [mobile, setMobile] = useState('');
   const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
-  const [category, setCategory] = useState('General Temple Donation');
+  const [category, setCategory] = useState('General Donation');
   const [amount, setAmount] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('UPI');
   const [notes, setNotes] = useState('');
@@ -343,7 +343,7 @@ export default function AdminDonations() {
                 <div>
                   <label className="input-label">Offering Category *</label>
                   <select value={category} onChange={(e) => setCategory(e.target.value)} className="input-field">
-                    <option value="General Temple Donation">General Temple Donation</option>
+                    <option value="General Donation">General Donation</option>
                     <option value="Annual Jathara Contribution">Annual Jathara Contribution</option>
                     <option value="Special Pooja / Seva">Special Pooja / Seva</option>
                     <option value="Temple Development">Temple Development</option>

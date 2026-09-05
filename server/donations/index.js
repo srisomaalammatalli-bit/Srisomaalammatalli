@@ -55,6 +55,29 @@ export default async function handler(req, res) {
       const cleanMobile = String(mobile).replace(/\s+/g, '');
       const user = await getAuthenticatedUser(req);
 
+      const validCategories = [
+        'General Donation',
+        'Annual Jathara Contribution',
+        'Temple Development',
+        'Special Pooja / Seva',
+        'Other Contribution'
+      ];
+      let cleanCategory = String(category || '').trim();
+      if (!validCategories.includes(cleanCategory)) {
+        const lower = cleanCategory.toLowerCase();
+        if (lower.includes('jathara')) {
+          cleanCategory = 'Annual Jathara Contribution';
+        } else if (lower.includes('development')) {
+          cleanCategory = 'Temple Development';
+        } else if (lower.includes('pooja') || lower.includes('seva')) {
+          cleanCategory = 'Special Pooja / Seva';
+        } else if (lower.includes('other')) {
+          cleanCategory = 'Other Contribution';
+        } else {
+          cleanCategory = 'General Donation';
+        }
+      }
+
       const donationId = 'don_' + crypto.randomBytes(12).toString('hex');
       const year = new Date().getFullYear();
       const receiptNo = `BAT-${year}-${Math.floor(1000 + Math.random() * 9000)}`;
@@ -72,7 +95,7 @@ export default async function handler(req, res) {
             cleanMobile,
             email ? email.trim() : null,
             address ? address.trim() : null,
-            category,
+            cleanCategory,
             numAmount,
             paymentMethod || 'UPI',
             txnRef || null,
@@ -96,7 +119,7 @@ export default async function handler(req, res) {
           action: 'Record Donation',
           entityType: 'Donation',
           entityId: receiptNo,
-          metadata: { amount: numAmount, category },
+          metadata: { amount: numAmount, category: cleanCategory },
           req
         });
 
