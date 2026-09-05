@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { query, transaction } from '../_lib/db.js';
-import { sendSuccess, sendError, sendBadRequest } from '../_lib/response.js';
+import { sendSuccess, sendError, sendBadRequest, sendUnauthorized } from '../_lib/response.js';
 import { getAuthenticatedUser } from '../_lib/auth.js';
 import { logAudit } from '../_lib/audit.js';
 
