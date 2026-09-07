@@ -165,11 +165,16 @@ export async function getPool() {
   // Strip sslmode from connectionString so pg-connection-string does not force rejectUnauthorized: true
   const cleanConnectionString = connectionString.replace(/[?&]sslmode=[^&]+/i, '');
 
+  // In serverless environments (Vercel), each function invocation runs in its own container.
+  // Using max: 1 and short idle timeout prevents serverless instances from exhausting
+  // PostgreSQL max connection slots (especially on cloud tiers like Aiven).
+  const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+
   pool = new Pool({
     connectionString: cleanConnectionString,
     ssl: sslConfig,
-    max: 5, // Aiven Free Tier: keep the pool small
-    idleTimeoutMillis: 30000,
+    max: isServerless ? 1 : 3,
+    idleTimeoutMillis: isServerless ? 2000 : 10000,
     connectionTimeoutMillis: 5000
   });
 
