@@ -93,6 +93,22 @@ export default async function handler(req, res) {
   
   // Normalise path, e.g. "/api/events/ev_123" -> "events/ev_123"
   const pathname = parsedUrl.pathname.replace(/^\/api\/?/, '').replace(/\/+$/, '');
+
+  // Enable CORS across srisomaalammatalli.in and www.srisomaalammatalli.in
+  const origin = req.headers.origin;
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Idempotency-Key');
+
+  if (req.method === 'OPTIONS') {
+    res.statusCode = 204;
+    return res.end();
+  }
   
   // Ensure req.query is populated from search parameters
   req.query = req.query || {};
