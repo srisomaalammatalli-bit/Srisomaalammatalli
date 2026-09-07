@@ -52,8 +52,10 @@ export default async function handler(req, res) {
       }
 
       const numAmount = Number(amount);
-      const cleanMobile = String(mobile).replace(/\s+/g, '');
+      const cleanMobile = mobile ? String(mobile).replace(/\s+/g, '') : 'Devotee';
       const user = await getAuthenticatedUser(req);
+      const fy = req.body?.fy || req.body?.financialYearId || req.body?.financial_year_id || 'FY2026-27';
+      const paymentDate = req.body?.paymentDate || req.body?.payment_date || new Date().toISOString().split('T')[0];
 
       const validCategories = [
         'General Donation',
@@ -85,8 +87,8 @@ export default async function handler(req, res) {
       const createdRecord = await transaction(async (client) => {
         // 1. Insert into donations table
         const insertRes = await client.query(
-          `INSERT INTO donations (id, receipt_no, donor_name, mobile, email, address, category, amount, payment_method, txn_ref, notes, status, created_by)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'Verified', $12)
+          `INSERT INTO donations (id, receipt_no, donor_name, mobile, email, address, category, amount, payment_method, payment_date, txn_ref, notes, status, financial_year_id, created_by)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, 'Verified', $13, $14)
            RETURNING *`,
           [
             donationId,
@@ -98,8 +100,10 @@ export default async function handler(req, res) {
             cleanCategory,
             numAmount,
             paymentMethod || 'UPI',
+            paymentDate,
             txnRef || null,
             notes || null,
+            fy,
             user ? user.id : null
           ]
         );

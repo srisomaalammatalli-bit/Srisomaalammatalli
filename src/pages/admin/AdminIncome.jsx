@@ -26,8 +26,8 @@ export default function AdminIncome() {
     },
     {
       title: 'General Devotee Donations',
-      amount: summary.totalDonations,
-      pct: Math.round((summary.totalDonations / (summary.totalIncome || 1)) * 100),
+      amount: summary.generalDonations ?? Math.max(0, summary.totalDonations - summary.jatharaCollection),
+      pct: Math.round(((summary.generalDonations ?? Math.max(0, summary.totalDonations - summary.jatharaCollection)) / (summary.totalIncome || 1)) * 100),
       desc: 'Daily archana, abhishekam, and online sevas via QR and website',
       color: 'var(--color-saffron)',
       link: '/admin/donations'

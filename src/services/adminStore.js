@@ -248,20 +248,44 @@ class AdminStore {
    * ---------------------------------------------------------------- */
 
   getFinancialSummary(fy = this.state.activeFY) {
-    const s = this.state._summary;
+    const targetFY = fy || this.state.activeFY || '';
+
+    // Calculate live from normalized store collections for the specific FY
+    const dons = (this.state.donations || []).filter(d => !targetFY || !d.fy || d.fy === targetFY);
+    const exps = (this.state.expenses || []).filter(e => (!targetFY || !e.fy || e.fy === targetFY) && e.status !== 'Rejected');
+    const lands = (this.state.landIncome || []).filter(l => (!targetFY || !l.fy || l.fy === targetFY) && l.status !== 'Rejected');
+    const chits = (this.state.chitIncome || []).filter(c => (!targetFY || !c.fy || c.fy === targetFY) && c.status !== 'Cancelled');
+
+    const totalDonations = dons.reduce((sum, d) => sum + Number(d.amount || 0), 0);
+    const totalExpenses = exps.reduce((sum, e) => sum + Number(e.amount || 0), 0);
+    const totalLand = lands.reduce((sum, l) => sum + Number(l.amount || 0), 0);
+    const totalChit = chits.reduce((sum, c) => sum + Number(c.amount || 0), 0);
+
+    const jatharaCollection = dons
+      .filter(d => (d.category || '').toLowerCase().includes('jathara'))
+      .reduce((sum, d) => sum + Number(d.amount || 0), 0);
+
+    const totalIncome = totalDonations + totalLand + totalChit;
+    const balance = totalIncome - totalExpenses;
+
+    const devoteeCount = new Set(
+      dons.map((d) => d.mobile || d.donor_name || d.donorName).filter(Boolean)
+    ).size;
+
+    const generalDonations = Math.max(0, totalDonations - jatharaCollection);
+
     return {
-      fy: fy || this.state.activeFY || '',
-      totalIncome: Number(s?.totalIncome || 0),
-      totalExpenses: Number(s?.totalExpenses || 0),
-      balance: Number(s?.balance || 0),
-      totalDonations: Number(s?.totalDonations || 0),
-      totalLand: Number(s?.totalLand || 0),
-      totalChit: Number(s?.totalChit || 0),
-      jatharaCollection: Number(s?.jatharaCollections || 0),
-      devoteeCount: new Set(
-        (this.state.donations || []).map((d) => d.mobile || d.donor_name || d.donorName).filter(Boolean)
-      ).size,
-      hasData: Boolean(s) && Number(s?.totalIncome || 0) + Number(s?.totalExpenses || 0) > 0
+      fy: targetFY,
+      totalIncome,
+      totalExpenses,
+      balance,
+      totalDonations,
+      generalDonations,
+      totalLand,
+      totalChit,
+      jatharaCollection,
+      devoteeCount,
+      hasData: totalIncome + totalExpenses > 0
     };
   }
 

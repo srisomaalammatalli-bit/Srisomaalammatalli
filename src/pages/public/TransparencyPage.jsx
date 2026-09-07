@@ -41,10 +41,11 @@ export default function TransparencyPage() {
   const hasPublishedAccounts = income > 0 || expenses > 0;
 
   // Income breakdown, from the same aggregated response.
+  const generalDonations = summary?.generalDonations ?? Math.max(0, Number(summary?.totalDonations || 0) - Number(summary?.jatharaCollections || 0));
   const sources = summary
     ? [
         { label: 'Annual Jathara Collection', amt: Number(summary.jatharaCollections || 0), color: 'var(--color-maroon-primary)' },
-        { label: 'Devotee Donations', amt: Number(summary.totalDonations || 0), color: 'var(--color-saffron)' },
+        { label: 'Devotee General & Seva Donations', amt: generalDonations, color: 'var(--color-saffron)' },
         { label: 'Land Lease Income', amt: Number(summary.totalLand || 0), color: 'var(--color-gold)' },
         { label: 'Committee Chit Income', amt: Number(summary.totalChit || 0), color: 'var(--color-success)' }
       ].filter((x) => x.amt > 0)

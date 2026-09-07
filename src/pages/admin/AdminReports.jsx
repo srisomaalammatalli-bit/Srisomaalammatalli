@@ -37,20 +37,24 @@ export default function AdminReports() {
   );
 
   // Receipt lines, from the aggregated summary.
+  const generalDonations = summary.generalDonations ?? Math.max(0, summary.totalDonations - summary.jatharaCollection);
   const inflowRows = [
     { label: 'Opening Bank Balance (as of April 1)', amount: openingBalance },
-    { label: 'Devotee Donations & Seva Offerings', amount: summary.totalDonations },
+    { label: 'Devotee General & Seva Donations', amount: generalDonations },
     { label: 'Annual Jathara Devotee Contributions', amount: summary.jatharaCollection },
-    { label: 'Land Lease Income', amount: summary.totalLand },
+    { label: 'Agricultural Land Lease Rental', amount: summary.totalLand },
     { label: 'Committee Welfare Chit Group Yield', amount: summary.totalChit }
   ];
 
-  // Expenditure lines, from recorded expenses. Empty until the committee
-  // enters them, rather than showing invented figures.
-  const expenseRows = (store.expenses || []).map((e) => ({
-    label: e.title || e.category || 'Expense',
-    amount: Number(e.amount) || 0
-  }));
+  // Expenditure lines, from recorded expenses for the selected financial year.
+  const expenseRows = (store.expenses || [])
+    .filter((e) => (!selectedFY || !e.fy || e.fy === selectedFY) && e.status !== 'Rejected')
+    .map((e) => ({
+      label: e.title || e.category || 'Expense',
+      amount: Number(e.amount) || 0
+    }));
+
+  const maxRows = Math.max(inflowRows.length, expenseRows.length);
 
   const handlePrint = () => {
     window.print();
@@ -61,22 +65,20 @@ export default function AdminReports() {
       [`${templeName} - Financial Statement`, selectedFY],
       ['Generated On', new Date().toLocaleDateString('en-IN')],
       [],
-      ['PARTICULARS', 'AMOUNT (INR)'],
+      ['RECEIPTS & INFLOWS', 'AMOUNT (INR)'],
       ['Opening Balance as on 01-April', openingBalance],
-      ['Devotee Donations & Sevas', summary.totalDonations],
-      ['Annual Jathara Collections', summary.jatharaCollection],
+      ['Devotee General & Seva Donations', generalDonations],
+      ['Annual Jathara Devotee Contributions', summary.jatharaCollection],
       ['Agricultural Land Lease Rental', summary.totalLand],
       ['Committee Welfare Chit Fund', summary.totalChit],
       ['TOTAL INFLOWS (A)', summary.totalIncome],
       ['GROSS FUNDS AVAILABLE (Opening + Inflows)', netTotalFunds],
       [],
-      ['EXPENDITURES', 'AMOUNT (INR)'],
-      // Expense lines come from recorded expenses, not fixed figures.
-      ...(store.expenses || []).map((e) => [e.title || e.category || 'Expense', Number(e.amount) || 0]),
-      ['Annual Jathara Festival Expenses', summary.jatharaExpenses || 0],
-      ['TOTAL EXPENDITURES (B)', summary.totalExpenses],
+      ['DISBURSEMENTS & OUTFLOWS', 'AMOUNT (INR)'],
+      ...expenseRows.map((e) => [e.label, e.amount]),
+      ['TOTAL DISBURSEMENTS (B)', summary.totalExpenses],
       [],
-      ['NET CLOSING BALANCE CARRIED FORWARD', closingBalance]
+      ['NET CLOSING BALANCE CARRIED FORWARD (A - B)', closingBalance]
     ];
 
     const csvContent = 'data:text/csv;charset=utf-8,' + lines.map(row => row.join(',')).join('\n');
@@ -189,16 +191,17 @@ export default function AdminReports() {
                   Both columns come from the database — no figure and no
                   descriptive claim (acreage, utility provider) is asserted
                   by the application. */}
-              {inflowRows.map((row, i) => {
+              {Array.from({ length: maxRows }).map((_, i) => {
+                const row = inflowRows[i];
                 const expense = expenseRows[i];
                 return (
-                  <tr key={row.label}>
-                    <td style={{ fontWeight: i === 0 ? 600 : 400 }}>{row.label}</td>
-                    <td style={{ textAlign: 'right', fontWeight: i === 0 ? 600 : 400 }}>
-                      {formatINR(row.amount)}
+                  <tr key={row?.label || expense?.label || i}>
+                    <td style={{ fontWeight: i === 0 && row ? 600 : 400 }}>{row ? row.label : ''}</td>
+                    <td style={{ textAlign: 'right', fontWeight: i === 0 && row ? 600 : 400 }}>
+                      {row ? formatINR(row.amount) : ''}
                     </td>
-                    <td style={{ fontWeight: i === 0 ? 600 : 400 }}>{expense ? expense.label : ''}</td>
-                    <td style={{ textAlign: 'right', fontWeight: i === 0 ? 600 : 400 }}>
+                    <td style={{ fontWeight: 400 }}>{expense ? expense.label : ''}</td>
+                    <td style={{ textAlign: 'right', fontWeight: 400 }}>
                       {expense ? formatINR(expense.amount) : ''}
                     </td>
                   </tr>

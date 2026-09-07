@@ -194,17 +194,17 @@ export function createResourceHandler(config) {
           return sendBadRequest(res, `Missing required field(s): ${missing.join(', ')}.`);
         }
 
-        const { columns, values, errors } = pickFields(body, fields, true);
-        if (errors.length) return sendBadRequest(res, errors.join(' '));
-        if (!columns.length) return sendBadRequest(res, 'No valid fields supplied.');
-
         // A resource may refuse a create it knows will fail — a duplicate the
         // database would reject with a constraint violation, which reaches the
-        // operator as an unhelpful 500.
+        // operator as an unhelpful 500 — or it may normalize/disambiguate fields in body.
         if (beforeCreate) {
           const objection = await beforeCreate(body, { query });
           if (objection) return sendBadRequest(res, objection);
         }
+
+        const { columns, values, errors } = pickFields(body, fields, true);
+        if (errors.length) return sendBadRequest(res, errors.join(' '));
+        if (!columns.length) return sendBadRequest(res, 'No valid fields supplied.');
 
         const id = newId(idPrefix);
         const allColumns = ['id', ...columns];

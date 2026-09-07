@@ -36,91 +36,164 @@ export default function AdminDashboard() {
   const kpis = adminStore.getDashboardKPIs(selectedFY);
   const summary = adminStore.getFinancialSummary(selectedFY);
 
-  // Filter recent donations and expenses into a unified feed
-  const donations = store.donations.map(d => ({
-    type: 'Income',
-    title: `${d.donorName} (${d.category})`,
-    category: d.category,
-    amount: d.amount,
-    date: d.paymentDate,
-    status: d.status,
-    raw: d
-  }));
+  // Filter recent donations, expenses, land, and chit into a unified feed for selected FY
+  const donations = (store.donations || [])
+    .filter(d => !selectedFY || !d.fy || d.fy === selectedFY)
+    .map(d => ({
+      type: 'Income',
+      title: `${d.donorName} (${d.category})`,
+      category: d.category,
+      amount: d.amount,
+      date: d.paymentDate,
+      status: d.status,
+      raw: d
+    }));
 
-  const expenses = store.expenses.map(e => ({
-    type: 'Expense',
-    title: `${e.paidTo} — ${e.title}`,
-    category: e.category,
-    amount: e.amount,
-    date: e.expenseDate,
-    status: e.status,
-    raw: e
-  }));
+  const expenses = (store.expenses || [])
+    .filter(e => !selectedFY || !e.fy || e.fy === selectedFY)
+    .map(e => ({
+      type: 'Expense',
+      title: `${e.paidTo} — ${e.title}`,
+      category: e.category,
+      amount: e.amount,
+      date: e.expenseDate,
+      status: e.status,
+      raw: e
+    }));
 
-  const allTxns = [...donations, ...expenses]
-    .sort((a, b) => new Date(b.date) - new Date(a.date))
+  const lands = (store.landIncome || [])
+    .filter(l => !selectedFY || !l.fy || l.fy === selectedFY)
+    .map(l => ({
+      type: 'Income',
+      title: `${l.propertyName} (${l.tenantName})`,
+      category: 'Land Lease',
+      amount: l.amount,
+      date: l.paymentDate,
+      status: l.status,
+      raw: l
+    }));
+
+  const chits = (store.chitIncome || [])
+    .filter(c => !selectedFY || !c.fy || c.fy === selectedFY)
+    .map(c => ({
+      type: 'Income',
+      title: `${c.chitName} (${c.memberName})`,
+      category: 'Chit Fund',
+      amount: c.amount,
+      date: c.paidDate,
+      status: c.status,
+      raw: c
+    }));
+
+  const allTxns = [...donations, ...expenses, ...lands, ...chits]
+    .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))
     .filter(item => {
       if (!searchQuery) return true;
       const q = searchQuery.toLowerCase();
       return item.title.toLowerCase().includes(q) || item.category.toLowerCase().includes(q);
     });
 
-  const handleSaveDonation = (e) => {
+  const [isSavingDonation, setIsSavingDonation] = useState(false);
+  const [donationError, setDonationError] = useState('');
+
+  const handleSaveDonation = async (e) => {
     e.preventDefault();
+    setDonationError('');
     if (!donName.trim() || !donAmt || Number(donAmt) <= 0) return;
 
-    const newDon = adminStore.addDonation({
-      donorName: donName.trim(),
-      // No invented fallback: an unrecorded number stays unrecorded.
-      mobile: donMobile.trim(),
-      category: donCat,
-      amount: Number(donAmt),
-      paymentMethod: donPayMethod,
-      fy: selectedFY
-    });
+    try {
+      setIsSavingDonation(true);
+      const newDon = await adminStore.addDonation({
+        donorName: donName.trim(),
+        mobile: donMobile.trim() || 'Devotee',
+        category: donCat,
+        amount: Number(donAmt),
+        paymentMethod: donPayMethod,
+        fy: selectedFY
+      });
 
-    setDonName('');
-    setDonMobile('');
-    setDonAmt('');
-    setShowDonationModal(false);
-    setSelectedReceipt(newDon);
+      setDonName('');
+      setDonMobile('');
+      setDonAmt('');
+      setShowDonationModal(false);
+      if (newDon) {
+        setSelectedReceipt(newDon);
+      }
+    } catch (err) {
+      console.error('[AdminDashboard] Donation save error:', err);
+      setDonationError(err?.message || 'Failed to record donation.');
+    } finally {
+      setIsSavingDonation(false);
+    }
   };
 
-  const handleSaveExpense = (e) => {
+  const [isSavingExpense, setIsSavingExpense] = useState(false);
+  const [expenseError, setExpenseError] = useState('');
+
+  const handleSaveExpense = async (e) => {
     e.preventDefault();
+    setExpenseError('');
     if (!expTitle.trim() || !expAmt || Number(expAmt) <= 0 || !expPayee.trim()) return;
 
-    adminStore.addExpense({
-      title: expTitle.trim(),
-      category: expCat,
-      amount: Number(expAmt),
-      paidTo: expPayee.trim(),
-      paymentMethod: expPayMethod,
-      fy: selectedFY
-    });
+    try {
+      setIsSavingExpense(true);
+      await adminStore.addExpense({
+        title: expTitle.trim(),
+        category: expCat,
+        amount: Number(expAmt),
+        paidTo: expPayee.trim(),
+        paymentMethod: expPayMethod,
+        fy: selectedFY
+      });
 
-    setExpTitle('');
-    setExpAmt('');
-    setExpPayee('');
-    setShowExpenseModal(false);
+      setExpTitle('');
+      setExpAmt('');
+      setExpPayee('');
+      setShowExpenseModal(false);
+    } catch (err) {
+      console.error('[AdminDashboard] Expense save error:', err);
+      setExpenseError(err?.message || 'Failed to record expense.');
+    } finally {
+      setIsSavingExpense(false);
+    }
   };
 
-  const monthlyBreakdown = [
-    { m: 'Apr', inc: 18500, exp: 6200 },
-    { m: 'May', inc: 15200, exp: 5400 },
-    { m: 'Jun', inc: 43800, exp: 4900 },
-    { m: 'Jul', inc: 26400, exp: 9800 },
-    { m: 'Aug', inc: 21900, exp: 7300 },
-    { m: 'Sep', inc: 32500, exp: 11450 },
-    { m: 'Oct', inc: 16800, exp: 5600 },
-    { m: 'Nov', inc: 19200, exp: 7100 },
-    { m: 'Dec', inc: 17400, exp: 5800 },
-    { m: 'Jan', inc: 13600, exp: 5200 },
-    { m: 'Feb', inc: 54800, exp: 18900 },
-    { m: 'Mar', inc: 15400, exp: 6100 }
+  const monthLabels = [
+    { m: 'Apr', idx: 3 },
+    { m: 'May', idx: 4 },
+    { m: 'Jun', idx: 5 },
+    { m: 'Jul', idx: 6 },
+    { m: 'Aug', idx: 7 },
+    { m: 'Sep', idx: 8 },
+    { m: 'Oct', idx: 9 },
+    { m: 'Nov', idx: 10 },
+    { m: 'Dec', idx: 11 },
+    { m: 'Jan', idx: 0 },
+    { m: 'Feb', idx: 1 },
+    { m: 'Mar', idx: 2 }
   ];
 
-  const maxChartAmt = 60000;
+  const getMonthIndex = (dateStr) => {
+    if (!dateStr) return -1;
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? -1 : d.getMonth();
+  };
+
+  const monthlyBreakdown = monthLabels.map(({ m, idx }) => {
+    const incDons = donations.filter(d => getMonthIndex(d.date) === idx).reduce((s, d) => s + Number(d.amount || 0), 0);
+    const incLands = lands.filter(l => getMonthIndex(l.date) === idx).reduce((s, l) => s + Number(l.amount || 0), 0);
+    const incChits = chits.filter(c => getMonthIndex(c.date) === idx).reduce((s, c) => s + Number(c.amount || 0), 0);
+    const expTotal = expenses.filter(e => e.status !== 'Rejected' && getMonthIndex(e.date) === idx).reduce((s, e) => s + Number(e.amount || 0), 0);
+
+    return {
+      m,
+      inc: incDons + incLands + incChits,
+      exp: expTotal
+    };
+  });
+
+  const maxDataVal = Math.max(1000, ...monthlyBreakdown.map(b => Math.max(b.inc, b.exp)));
+  const maxChartAmt = maxDataVal > 0 ? maxDataVal : 1000;
 
   return (
     <div>
@@ -374,6 +447,11 @@ export default function AdminDashboard() {
               </h3>
               <button onClick={() => setShowDonationModal(false)} style={{ border: 'none', background: 'none', fontSize: '18px', cursor: 'pointer' }}>✕</button>
             </div>
+            {donationError && (
+              <div style={{ background: '#fee', color: '#b00020', padding: '8px 12px', borderRadius: '6px', marginBottom: '14px', fontSize: '13px' }}>
+                {donationError}
+              </div>
+            )}
             <form onSubmit={handleSaveDonation}>
               <div style={{ marginBottom: '14px' }}>
                 <label className="input-label">Devotee / Donor Name *</label>
@@ -435,7 +513,9 @@ export default function AdminDashboard() {
 
               <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
                 <button type="button" onClick={() => setShowDonationModal(false)} className="btn btn-outline">Cancel</button>
-                <button type="submit" className="btn btn-primary">Save & Issue Receipt</button>
+                <button type="submit" disabled={isSavingDonation} className="btn btn-primary">
+                  {isSavingDonation ? 'Saving & Generating Receipt...' : 'Save & Issue Receipt'}
+                </button>
               </div>
             </form>
           </div>
@@ -452,6 +532,11 @@ export default function AdminDashboard() {
               </h3>
               <button onClick={() => setShowExpenseModal(false)} style={{ border: 'none', background: 'none', fontSize: '18px', cursor: 'pointer' }}>✕</button>
             </div>
+            {expenseError && (
+              <div style={{ background: '#fee', color: '#b00020', padding: '8px 12px', borderRadius: '6px', marginBottom: '14px', fontSize: '13px' }}>
+                {expenseError}
+              </div>
+            )}
             <form onSubmit={handleSaveExpense}>
               <div style={{ marginBottom: '14px' }}>
                 <label className="input-label">Expense Title / Item *</label>
@@ -515,7 +600,9 @@ export default function AdminDashboard() {
 
               <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
                 <button type="button" onClick={() => setShowExpenseModal(false)} className="btn btn-outline">Cancel</button>
-                <button type="submit" className="btn btn-primary">Record Expense</button>
+                <button type="submit" disabled={isSavingExpense} className="btn btn-primary">
+                  {isSavingExpense ? 'Recording Expense...' : 'Record Expense'}
+                </button>
               </div>
             </form>
           </div>

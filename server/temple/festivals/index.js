@@ -58,6 +58,17 @@ const handler = createResourceHandler({
   // Newest first: the archive is normally read from the present backwards.
   orderBy: 'year DESC, display_order ASC, created_at DESC',
   requiredOnCreate: ['name'],
+  beforeCreate: async (body, { query }) => {
+    const base = String(body.slug || body.name || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '')
+      .slice(0, 100);
+    const found = await query('SELECT id FROM temple_festivals WHERE slug = $1', [base]);
+    if (found.rows.length) {
+      body.slug = `${base}-${Date.now().toString().slice(-4)}`;
+    }
+  },
   fields: {
     name: { column: 'name', transform: text(200) },
     nameTelugu: { column: 'name_telugu', transform: text(200) },

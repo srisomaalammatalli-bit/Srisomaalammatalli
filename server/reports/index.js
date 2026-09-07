@@ -101,6 +101,8 @@ export default async function handler(req, res) {
     const totalIncome = totalDonations + totalLand + totalChit;
     const balance = totalIncome - totalExpenses;
 
+    const generalDonations = Math.max(0, totalDonations - jatharaCollections);
+
     return sendSuccess(res, {
       fy,
       financialYears,
@@ -109,6 +111,7 @@ export default async function handler(req, res) {
         totalExpenses,
         balance,
         totalDonations,
+        generalDonations,
         totalLand,
         totalChit,
         jatharaCollections

@@ -37,12 +37,18 @@ export default function AdminLand() {
     });
   }, []);
 
-  const totalLandIncome = (store.landIncome || [])
-    .filter(l => !l.fy || l.fy === selectedFY)
+  const displayedLand = (store.landIncome || [])
+    .filter(l => !selectedFY || !l.fy || l.fy === selectedFY);
+
+  const totalLandIncome = displayedLand
+    .filter(l => l.status !== 'Rejected')
     .reduce((s, l) => s + Number(l.amount || 0), 0);
 
-  const totalChitIncome = (store.chitIncome || [])
-    .filter(c => !c.fy || c.fy === selectedFY)
+  const displayedChit = (store.chitIncome || [])
+    .filter(c => !selectedFY || !c.fy || c.fy === selectedFY);
+
+  const totalChitIncome = displayedChit
+    .filter(c => c.status !== 'Cancelled')
     .reduce((s, c) => s + Number(c.amount || 0), 0);
 
   const showNotification = (msg, type = 'success') => {
@@ -277,12 +283,12 @@ export default function AdminLand() {
               </tr>
             </thead>
             <tbody>
-              {(!store.landIncome || store.landIncome.length === 0) ? (
+              {(!displayedLand || displayedLand.length === 0) ? (
                 <tr>
                   <td colSpan="8" style={{ textAlign: 'center', padding: '36px 20px', color: 'var(--color-text-muted)' }}>
                     <div style={{ fontSize: '28px', marginBottom: '8px' }}>🌾</div>
                     <div style={{ fontWeight: 600, fontSize: '15px', color: 'var(--color-text-primary)' }}>
-                      No land lease records found
+                      No land lease records found {selectedFY ? `for ${selectedFY}` : ''}
                     </div>
                     <div style={{ fontSize: '13px', marginTop: '4px' }}>
                       Click <strong>"+ Record Land Lease"</strong> above to add agricultural lease income.
@@ -290,7 +296,7 @@ export default function AdminLand() {
                   </td>
                 </tr>
               ) : (
-                store.landIncome.map((item) => (
+                displayedLand.map((item) => (
                   <tr key={item.id}>
                     <td style={{ fontWeight: 600 }}>{item.propertyName || item.property_name || 'Temple Land'}</td>
                     <td>{item.tenantName || item.tenant_name || '—'}</td>
@@ -367,12 +373,12 @@ export default function AdminLand() {
               </tr>
             </thead>
             <tbody>
-              {(!store.chitIncome || store.chitIncome.length === 0) ? (
+              {(!displayedChit || displayedChit.length === 0) ? (
                 <tr>
                   <td colSpan="8" style={{ textAlign: 'center', padding: '36px 20px', color: 'var(--color-text-muted)' }}>
                     <div style={{ fontSize: '28px', marginBottom: '8px' }}>💰</div>
                     <div style={{ fontWeight: 600, fontSize: '15px', color: 'var(--color-text-primary)' }}>
-                      No chit fund installments found
+                      No chit fund installments found {selectedFY ? `for ${selectedFY}` : ''}
                     </div>
                     <div style={{ fontSize: '13px', marginTop: '4px' }}>
                       Click <strong>"+ Record Chit Installment"</strong> above to record committee welfare contributions.
@@ -380,7 +386,7 @@ export default function AdminLand() {
                   </td>
                 </tr>
               ) : (
-                store.chitIncome.map((chit) => (
+                displayedChit.map((chit) => (
                   <tr key={chit.id}>
                     <td style={{ fontWeight: 600 }}>{chit.chitName || chit.chit_name || 'Chit Group'}</td>
                     <td>{chit.memberName || chit.member_name || '—'}</td>

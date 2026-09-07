@@ -52,6 +52,17 @@ const handler = createResourceHandler({
   // Soonest first: an events page is read to find out what is coming.
   orderBy: 'event_date ASC, display_order ASC',
   requiredOnCreate: ['title', 'eventDate'],
+  beforeCreate: async (body, { query }) => {
+    const base = String(body.slug || body.title || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '')
+      .slice(0, 100);
+    const found = await query('SELECT id FROM events WHERE slug = $1', [base]);
+    if (found.rows.length) {
+      body.slug = `${base}-${Date.now().toString().slice(-4)}`;
+    }
+  },
   fields: {
     title: { column: 'title', transform: text(200) },
     titleTelugu: { column: 'title_telugu', transform: text(200) },

@@ -77,21 +77,25 @@ export default async function handler(req, res) {
       };
       const rawCat = String(req.body?.category || categoryId || '').toLowerCase().trim();
       const validCategoryId = rawCat.startsWith('exp_') ? rawCat : (categoryMap[rawCat] || 'exp_other');
+      const fy = req.body?.fy || req.body?.financialYearId || req.body?.financial_year_id || 'FY2026-27';
+      const expenseDate = req.body?.expenseDate || req.body?.expense_date || new Date().toISOString().split('T')[0];
 
       const result = await query(
-        `INSERT INTO expenses (id, title, category_id, amount, paid_to, payment_method, description, receipt_url, status, created_by)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        `INSERT INTO expenses (id, title, category_id, amount, expense_date, paid_to, payment_method, description, receipt_url, status, financial_year_id, created_by)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
          RETURNING *`,
         [
           expenseId,
           title.trim(),
           validCategoryId,
           numAmount,
+          expenseDate,
           paidTo.trim(),
           paymentMethod || 'UPI',
           description ? description.trim() : null,
           receiptUrl || null,
           finalStatus,
+          fy,
           user.id
         ]
       );
