@@ -180,10 +180,31 @@ export function createResourceHandler(config) {
         const pubFilter = !user && publicWhere ? ` AND (${publicWhere})` : '';
 
         if (reqSlug) {
-          const result = await query(
-            `SELECT ${publicSelect} FROM ${table} WHERE slug = $1${pubFilter} LIMIT 1`,
-            [reqSlug]
-          );
+          let result;
+          try {
+            result = await query(
+              `SELECT ${publicSelect} FROM ${table} WHERE slug = $1${pubFilter} LIMIT 1`,
+              [reqSlug]
+            );
+          } catch (err) {
+            if (/column.*does not exist|no such column/i.test(err?.message) && table === 'poojas') {
+              const fallbackSelect =
+                'id, name, name_telugu, description, pooja_time, day_of_week, is_daily, ' +
+                'price_paise, duration_minutes, image_url, instructions, available, ' +
+                'display_order, published, created_at';
+              const all = await query(`SELECT ${fallbackSelect} FROM ${table}${pubFilter ? ` WHERE ${publicWhere}` : ''}`);
+              const matched = all.rows.find((r) => {
+                const s = (r.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+                return s === reqSlug || r.id === reqSlug;
+              });
+              if (matched && !matched.slug) {
+                matched.slug = reqSlug;
+              }
+              result = { rows: matched ? [matched] : [] };
+            } else {
+              throw err;
+            }
+          }
           if (!result.rows.length) {
             return sendNotFound(res, `${entityType} not found.`);
           }
@@ -191,10 +212,29 @@ export function createResourceHandler(config) {
         }
 
         if (reqId) {
-          const result = await query(
-            `SELECT ${publicSelect} FROM ${table} WHERE id = $1${pubFilter} LIMIT 1`,
-            [reqId]
-          );
+          let result;
+          try {
+            result = await query(
+              `SELECT ${publicSelect} FROM ${table} WHERE id = $1${pubFilter} LIMIT 1`,
+              [reqId]
+            );
+          } catch (err) {
+            if (/column.*does not exist|no such column/i.test(err?.message) && table === 'poojas') {
+              const fallbackSelect =
+                'id, name, name_telugu, description, pooja_time, day_of_week, is_daily, ' +
+                'price_paise, duration_minutes, image_url, instructions, available, ' +
+                'display_order, published, created_at';
+              result = await query(
+                `SELECT ${fallbackSelect} FROM ${table} WHERE id = $1${pubFilter} LIMIT 1`,
+                [reqId]
+              );
+              if (result.rows.length && !result.rows[0].slug) {
+                result.rows[0].slug = (result.rows[0].name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || result.rows[0].id;
+              }
+            } else {
+              throw err;
+            }
+          }
           if (!result.rows.length) {
             return sendNotFound(res, `${entityType} not found.`);
           }
@@ -202,9 +242,29 @@ export function createResourceHandler(config) {
         }
 
         const where = user || !publicWhere ? '' : ` WHERE ${publicWhere}`;
-        const result = await query(
-          `SELECT ${publicSelect} FROM ${table}${where} ORDER BY ${orderBy}`
-        );
+        let result;
+        try {
+          result = await query(
+            `SELECT ${publicSelect} FROM ${table}${where} ORDER BY ${orderBy}`
+          );
+        } catch (err) {
+          if (/column.*does not exist|no such column/i.test(err?.message) && table === 'poojas') {
+            const fallbackSelect =
+              'id, name, name_telugu, description, pooja_time, day_of_week, is_daily, ' +
+              'price_paise, duration_minutes, image_url, instructions, available, ' +
+              'display_order, published, created_at';
+            result = await query(
+              `SELECT ${fallbackSelect} FROM ${table}${where} ORDER BY ${orderBy}`
+            );
+            for (const row of result.rows) {
+              if (!row.slug) {
+                row.slug = (row.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || row.id;
+              }
+            }
+          } else {
+            throw err;
+          }
+        }
         return sendSuccess(res, { items: result.rows, count: result.rows.length });
       }
 

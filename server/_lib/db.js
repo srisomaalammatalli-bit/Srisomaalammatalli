@@ -185,6 +185,59 @@ export async function getPool() {
   return pool;
 }
 
+let postgresMigrated = false;
+let migrationInProgress = null;
+
+/**
+ * Ensures newly required columns and canonical metadata exist on PostgreSQL
+ * without requiring manual CLI migration runs on hosted serverless environments.
+ */
+async function ensurePostgresSchema(p) {
+  if (postgresMigrated) return;
+  if (migrationInProgress) return migrationInProgress;
+
+  migrationInProgress = (async () => {
+    try {
+      const client = await p.connect();
+      try {
+        await client.query(`
+          ALTER TABLE poojas ADD COLUMN IF NOT EXISTS slug VARCHAR(120);
+          ALTER TABLE poojas ADD COLUMN IF NOT EXISTS seo_title VARCHAR(200);
+          ALTER TABLE poojas ADD COLUMN IF NOT EXISTS seo_description TEXT;
+          ALTER TABLE events ADD COLUMN IF NOT EXISTS seo_title VARCHAR(200);
+          ALTER TABLE events ADD COLUMN IF NOT EXISTS seo_description TEXT;
+          ALTER TABLE temple_festivals ADD COLUMN IF NOT EXISTS seo_title VARCHAR(200);
+          ALTER TABLE temple_festivals ADD COLUMN IF NOT EXISTS seo_description TEXT;
+
+          CREATE UNIQUE INDEX IF NOT EXISTS idx_poojas_slug ON poojas(slug);
+
+          UPDATE poojas 
+          SET slug = LOWER(REPLACE(REPLACE(name, ' ', '-'), '/', '-')) || '-' || SUBSTR(id, 5, 8) 
+          WHERE slug IS NULL OR slug = '';
+
+          UPDATE poojas SET slug = 'abhishekam' WHERE id = 'pja_abhishekam' AND (slug IS NULL OR slug = '');
+          UPDATE poojas SET slug = 'kumkuma-archana' WHERE id = 'pja_kumkuma_archana' AND (slug IS NULL OR slug = '');
+
+          UPDATE settings SET value = '"Srisomaalammatalli Temple"' WHERE key = 'temple_name';
+          INSERT INTO settings (key, value) VALUES ('temple_name_alt', '"Sri Somalamma Talli Temple"') ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
+          UPDATE settings SET value = '"శ్రీ సోమాలమ్మ తల్లి దేవాలయం"' WHERE key = 'temple_name_telugu';
+          UPDATE settings SET value = '"+91 98667 33559"' WHERE key = 'temple_phone';
+          UPDATE settings SET value = '"srisomaalammatalli@gmail.com"' WHERE key = 'temple_email';
+        `);
+        postgresMigrated = true;
+      } finally {
+        client.release();
+      }
+    } catch (err) {
+      console.warn('[DB] PostgreSQL auto-sync notice:', err?.message);
+    } finally {
+      migrationInProgress = null;
+    }
+  })();
+
+  return migrationInProgress;
+}
+
 /* ------------------------------------------------------------------ *
  * Public API — identical shape on both drivers
  * ------------------------------------------------------------------ */
@@ -208,6 +261,9 @@ export async function query(text, params = []) {
     } else {
       const p = await getPool();
       if (!p) throw new Error('DATABASE_NOT_CONFIGURED');
+      if (!postgresMigrated) {
+        await ensurePostgresSchema(p);
+      }
       res = await p.query(text, params);
     }
 
