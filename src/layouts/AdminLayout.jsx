@@ -58,6 +58,8 @@ export default function AdminLayout() {
     {
       title: 'ADMINISTRATION',
       items: [
+        { label: 'SEO & Entity Graph', path: '/admin/seo', icon: '🔍' },
+        { label: 'SEO Diagnostics', path: '/admin/seo/diagnostics', icon: '🩺' },
         { label: 'Committee Members', path: '/admin/committee', icon: '☰' },
         { label: 'Audit Trail', path: '/admin/audit', icon: '📜' },
         { label: 'Settings', path: '/admin/settings', icon: '⚙' }

@@ -4,6 +4,8 @@ import apiClient from '../../services/apiClient.js';
 import Icon from '../../components/Icon.jsx';
 import { TEMPLE, formatTime, formatTimeRange, formatDate } from '../../config/temple.js';
 import { useSettings, settingValue } from '../../hooks/useSettings.js';
+import SeoHead from '../../components/SeoHead.jsx';
+import AiAnswerBlock from '../../components/AiAnswerBlock.jsx';
 import HeroCarousel, {
   useHeroCarousel,
   HeroCarouselControls,
@@ -102,28 +104,47 @@ export default function HomePage() {
     { icon: 'play', title: 'Temple Videos', desc: 'Recordings of celebrations and processions.', path: '/videos' }
   ];
 
+  const homeFacts = [
+    { label: 'Temple Name', value: TEMPLE.name },
+    { label: 'Alternate Name', value: TEMPLE.alternateName },
+    { label: 'Presiding Deity', value: TEMPLE.deity },
+    { label: 'Location', value: 'Mungandapalem, Munjavarapu Kottu, P. Gannavaram Mandal' },
+    { label: 'District & State', value: 'East Godavari District, Andhra Pradesh - 533214' },
+    { label: 'Morning Darshan', value: `${formatTime(TEMPLE.timings.morning.open)} – ${formatTime(TEMPLE.timings.morning.close)}` },
+    { label: 'Evening Darshan', value: `${formatTime(TEMPLE.timings.evening.open)} – ${formatTime(TEMPLE.timings.evening.close)}` },
+    { label: 'Schedule', value: 'Open every day of the week' }
+  ];
+
+  const homeRelatedLinks = [
+    { label: 'Darshan & Pooja Timings', to: '/timings' },
+    { label: 'Book a Pooja / Seva', to: '/poojas' },
+    { label: 'Temple Sthala Puranam', to: '/history' },
+    { label: 'Festivals & Annual Jathara', to: '/festivals' },
+    { label: 'Directions & How to Reach', to: '/contact' }
+  ];
+
   return (
     <main className="page-enter">
+      <SeoHead
+        title={`${TEMPLE.name} | Mungandapalem, Andhra Pradesh`}
+        description={`Official portal of ${TEMPLE.name}, Mungandapalem, Munjavarapu Kottu, P. Gannavaram Mandal, East Godavari District, Andhra Pradesh. Temple timings, daily poojas, sevas, annual Jathara festivals, sthala puranam history, and online seva booking.`}
+        canonicalPath="/"
+      />
+
       {/* Hero Section */}
       <section className="hero-section" style={heroStyle}>
         <HeroCarousel carousel={carousel} />
         <div className="hero-overlay" />
         <div className="hero-content">
           <div className="hero-telugu">
-            {hero?.title_telugu || 'సర్వే జనాః సుఖినో భవంతు'}
+            {hero?.title_telugu || 'శ్రీ సోమాలమ్మ తల్లి దేవాలయం · సర్వే జనాః సుఖినో భవంతు'}
           </div>
           <h1 className="hero-title">
-            {hero?.title ? (
-              hero.title
-            ) : (
-              <>
-                Divine Blessings.<br />Transparent Service.
-              </>
-            )}
+            {hero?.title ? hero.title : TEMPLE.name}
           </h1>
           <p className="hero-desc">
             {hero?.subtitle ||
-              'Every rupee offered to the temple is recorded, receipted, and published for the community to see.'}
+              'Mungandapalem, Munjavarapu Kottu, P. Gannavaram Mandal, East Godavari District, Andhra Pradesh.'}
           </p>
           <div className="hero-actions">
             <Link to="/donate" className="btn btn-saffron">
@@ -181,6 +202,16 @@ export default function HomePage() {
             </div>
           )}
         </div>
+      </section>
+
+      {/* AI Grounding / AEO Direct Answer Block */}
+      <section className="container" style={{ margin: '2.5rem auto', padding: '0 1rem', maxWidth: '960px' }}>
+        <AiAnswerBlock
+          question={`Where is ${TEMPLE.name} located and what are its daily darshan timings?`}
+          answer={`${TEMPLE.name} (also known as ${TEMPLE.alternateName}) is a revered Hindu temple dedicated to Sri Somalamma Thalli, located in Mungandapalem, Munjavarapu Kottu, P. Gannavaram Mandal, East Godavari District, Andhra Pradesh (PIN: 533214). The temple is open every day with morning darshan from ${formatTime(TEMPLE.timings.morning.open)} to ${formatTime(TEMPLE.timings.morning.close)} and evening darshan from ${formatTime(TEMPLE.timings.evening.open)} to ${formatTime(TEMPLE.timings.evening.close)}.`}
+          facts={homeFacts}
+          relatedLinks={homeRelatedLinks}
+        />
       </section>
 
       {/* Amma Vari — the portrait photographs, shown upright and uncropped.

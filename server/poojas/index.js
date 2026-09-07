@@ -39,15 +39,40 @@ export default createResourceHandler({
   idPrefix: 'pja',
   entityType: 'Pooja',
   publicSelect:
-    'id, name, name_telugu, description, pooja_time, day_of_week, is_daily, ' +
+    'id, name, name_telugu, slug, description, pooja_time, day_of_week, is_daily, ' +
     'price_paise, duration_minutes, image_url, instructions, available, ' +
-    'display_order, published, created_at',
+    'display_order, published, created_at, seo_title, seo_description',
   publicWhere: 'published = TRUE',
   orderBy: 'display_order ASC, name ASC',
   requiredOnCreate: ['name'],
+  beforeCreate: async (body, { query }) => {
+    const base = String(body.slug || body.name || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '')
+      .slice(0, 100);
+    const found = await query('SELECT id FROM poojas WHERE slug = $1', [base]);
+    if (found.rows.length) {
+      body.slug = `${base}-${Date.now().toString().slice(-4)}`;
+    } else {
+      body.slug = base || `pooja-${Date.now().toString().slice(-6)}`;
+    }
+  },
   fields: {
     name: { column: 'name', transform: text(160) },
     nameTelugu: { column: 'name_telugu', transform: text(160) },
+    slug: {
+      column: 'slug',
+      derivedFrom: 'slug',
+      transform: (raw, body) => {
+        const base = String(raw || body?.name || '')
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-|-$/g, '')
+          .slice(0, 120);
+        return base || null;
+      }
+    },
     description: { column: 'description', transform: text(1000) },
     poojaTime: { column: 'pooja_time', transform: text(32) },
     dayOfWeek: { column: 'day_of_week', transform: text(16) },
@@ -60,6 +85,8 @@ export default createResourceHandler({
     instructions: { column: 'instructions', transform: text(2000) },
     available: { column: 'available', transform: bool },
     displayOrder: { column: 'display_order', transform: int },
-    published: { column: 'published', transform: bool }
+    published: { column: 'published', transform: bool },
+    seoTitle: { column: 'seo_title', transform: text(200) },
+    seoDescription: { column: 'seo_description', transform: text(1000) }
   }
 });

@@ -1,0 +1,27 @@
+# Robots.txt for Srisomaalammatalli Temple
+# Canonical: https://srisomaalammatalli.in
+
+User-agent: *
+Allow: /
+Allow: /history
+Allow: /timings
+Allow: /poojas
+Allow: /events
+Allow: /festivals
+Allow: /gallery
+Allow: /videos
+Allow: /contact
+Allow: /donate
+Allow: /assets/
+
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api
+Disallow: /api/
+Disallow: /login
+Disallow: /payment
+Disallow: /payment/
+Disallow: /claims
+Disallow: /claims/
+
+Sitemap: https://srisomaalammatalli.in/sitemap.xml

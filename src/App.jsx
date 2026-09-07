@@ -20,6 +20,12 @@ const AboutPage = lazy(() => import('./pages/public/AboutPage.jsx'));
 const HistoryPage = lazy(() => import('./pages/public/HistoryPage.jsx'));
 const SourcesPage = lazy(() => import('./pages/public/SourcesPage.jsx'));
 const SubmitHistoryPage = lazy(() => import('./pages/public/SubmitHistoryPage.jsx'));
+const PoojaDetailPage = lazy(() => import('./pages/public/PoojaDetailPage.jsx'));
+const EventDetailPage = lazy(() => import('./pages/public/EventDetailPage.jsx'));
+const FestivalsPage = lazy(() => import('./pages/public/FestivalsPage.jsx'));
+const FestivalDetailPage = lazy(() => import('./pages/public/FestivalDetailPage.jsx'));
+const AdminSeo = lazy(() => import('./pages/admin/AdminSeo.jsx'));
+const AdminSeoDiagnostics = lazy(() => import('./pages/admin/AdminSeoDiagnostics.jsx'));
 
 // Admin Pages
 import AdminLogin from './pages/admin/AdminLogin.jsx';
@@ -98,11 +104,43 @@ export default function App() {
         <Route path="/financial-transparency" element={<Navigate to="/" replace />} />
         <Route path="/transparency" element={<Navigate to="/" replace />} />
         <Route path="/events" element={<EventsPage />} />
+        <Route
+          path="/events/:slug"
+          element={
+            <Suspense fallback={<div className="page-main" aria-busy="true" />}>
+              <EventDetailPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/festivals"
+          element={
+            <Suspense fallback={<div className="page-main" aria-busy="true" />}>
+              <FestivalsPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/festivals/:slug"
+          element={
+            <Suspense fallback={<div className="page-main" aria-busy="true" />}>
+              <FestivalDetailPage />
+            </Suspense>
+          }
+        />
         <Route path="/gallery" element={<GalleryPage />} />
         <Route path="/videos" element={<VideosPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/donate" element={<DonateWizard />} />
         <Route path="/poojas" element={<PoojasPage />} />
+        <Route
+          path="/poojas/:slug"
+          element={
+            <Suspense fallback={<div className="page-main" aria-busy="true" />}>
+              <PoojaDetailPage />
+            </Suspense>
+          }
+        />
       </Route>
 
       {/* Admin Login Route */}
@@ -203,6 +241,22 @@ export default function App() {
         />
         <Route path="audit" element={<AdminAudit />} />
         <Route path="settings" element={<AdminSettings />} />
+        <Route
+          path="seo"
+          element={
+            <AdminChunk>
+              <AdminSeo />
+            </AdminChunk>
+          }
+        />
+        <Route
+          path="seo/diagnostics"
+          element={
+            <AdminChunk>
+              <AdminSeoDiagnostics />
+            </AdminChunk>
+          }
+        />
       </Route>
 
       {/* Fallback to Home */}

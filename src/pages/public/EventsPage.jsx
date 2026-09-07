@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import apiClient from '../../services/apiClient.js';
 import CardMedia from '../../components/CardMedia.jsx';
+import SeoHead from '../../components/SeoHead.jsx';
+import { TEMPLE } from '../../config/temple.js';
 
 /** The month and day badge, taken from the event's real date. */
 function badgeFor(eventDate) {
@@ -21,14 +24,11 @@ export default function EventsPage() {
     async function loadEvents() {
       try {
         const data = await apiClient.get('/events');
-        // The endpoint answers { events, items, count } — never a bare array,
-        // which the previous Array.isArray() check assumed. It was therefore
-        // always false, and the page showed a placeholder calendar even when
-        // the temple had real events.
         const rows = data?.events || data?.items || [];
         setEvents(
           rows.map((e) => ({
             id: e.id,
+            slug: e.slug,
             name: e.title,
             nameTelugu: e.title_telugu,
             desc: e.description,
@@ -39,7 +39,6 @@ export default function EventsPage() {
           }))
         );
       } catch {
-        // An unreachable API is not a reason to invent a calendar.
         setEvents([]);
       } finally {
         setLoading(false);
@@ -50,11 +49,16 @@ export default function EventsPage() {
 
   return (
     <main className="page-main">
+      <SeoHead
+        title={`Upcoming Events & Celebrations | ${TEMPLE.name}`}
+        description={`Sacred utsavams, special poojas, and auspicious celebrations at ${TEMPLE.name}, Mungandapalem. Complete temple calendar and celebration dates.`}
+        canonicalPath="/events"
+      />
       <header className="page-header">
         <p className="page-eyebrow">Temple Calendar</p>
         <h1 className="page-title">Temple Events &amp; Festivals</h1>
         <p className="page-subtitle">
-          Sacred poojas, utsavams, and celebrations at Sri Somalamma Talli Devasthanam
+          Sacred poojas, utsavams, and celebrations at {TEMPLE.name}
         </p>
       </header>
 
@@ -68,10 +72,9 @@ export default function EventsPage() {
       ) : (
         <div className="events-grid">
           {events.map((evt) => {
-            // Every value below comes from the record. Nothing is filled in:
-            // an event with no stated time or place simply shows neither.
             const badge = badgeFor(evt.eventDate);
             const meta = [evt.time, evt.place].filter(Boolean).join(' · ');
+            const detailUrl = `/events/${evt.slug || evt.id}`;
 
             return (
               <article key={evt.id} className="event-card">
@@ -84,7 +87,11 @@ export default function EventsPage() {
                     </div>
                   ) : null}
                   <div>
-                    <h2 className="event-card-title">{evt.name}</h2>
+                    <h2 className="event-card-title">
+                      <Link to={detailUrl} style={{ color: 'inherit', textDecoration: 'none' }}>
+                        {evt.name}
+                      </Link>
+                    </h2>
                     {evt.nameTelugu ? (
                       <p className="event-card-telugu font-telugu" lang="te">
                         {evt.nameTelugu}
@@ -92,6 +99,14 @@ export default function EventsPage() {
                     ) : null}
                     {meta ? <p className="event-card-meta">{meta}</p> : null}
                     {evt.desc ? <p className="event-card-desc">{evt.desc}</p> : null}
+                    <div style={{ marginTop: '0.75rem' }}>
+                      <Link
+                        to={detailUrl}
+                        style={{ fontSize: '0.85rem', color: 'var(--color-primary, #b45309)', textDecoration: 'none', fontWeight: 500 }}
+                      >
+                        View Event Details →
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </article>

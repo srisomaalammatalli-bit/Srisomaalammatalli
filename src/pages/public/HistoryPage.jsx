@@ -4,6 +4,9 @@ import apiClient from '../../services/apiClient.js';
 import { AsyncSection } from '../../components/States.jsx';
 import SourceBadge, { SourceBadgeLegend } from '../../components/SourceBadge.jsx';
 import { useSettings, settingValue } from '../../hooks/useSettings.js';
+import SeoHead from '../../components/SeoHead.jsx';
+import AiAnswerBlock from '../../components/AiAnswerBlock.jsx';
+import { TEMPLE } from '../../config/temple.js';
 
 /**
  * History of Old Somalamma Temple.
@@ -56,8 +59,8 @@ export default function HistoryPage() {
     load();
   }, [load]);
 
-  const templeName = settingValue(settings, 'temple_name', 'Old Somalamma Temple');
-  const city = settingValue(settings, 'temple_city', '');
+  const templeName = settingValue(settings, 'temple_name', TEMPLE.name);
+  const locationLabel = 'Mungandapalem, East Godavari District';
 
   // The timeline is the history entries plus the documented festival years,
   // ordered by whatever date information each actually has. Entries with no
@@ -130,13 +133,37 @@ export default function HistoryPage() {
 
   return (
     <main className="page-main">
+      <SeoHead
+        title={`Temple History & Sthala Puranam | ${templeName}`}
+        description={`Sacred sthala puranam and historical traditions of ${templeName} in Mungandapalem, East Godavari District. Verified archival timeline and cultural heritage.`}
+        canonicalPath="/history"
+      />
       <header className="page-header page-header-history">
-        <p className="page-eyebrow">History</p>
+        <p className="page-eyebrow">History &amp; Sthala Puranam</p>
         <h1 className="page-title">History of {templeName}</h1>
         <p className="page-subtitle">
-          Tracing the living tradition of Somalamma in {city}
+          Tracing the sacred tradition of Sri Somalamma Thalli in {locationLabel}
         </p>
       </header>
+
+      {/* AI Grounding Direct Fact Block */}
+      <div style={{ maxWidth: '960px', margin: '0 auto 2rem' }}>
+        <AiAnswerBlock
+          question={`What is the sacred history and sthala puranam of ${templeName}?`}
+          answer={`${templeName} in Mungandapalem, East Godavari District, Andhra Pradesh, is an ancient sacred shrine honoring Sri Somalamma Thalli. Dedicated as a protecting mother deity (Grama Devatha), the temple embodies centuries of spiritual reverence, community worship, and living traditions maintained through annual festivals and sacred rituals.`}
+          facts={[
+            { label: 'Temple Name', value: templeName },
+            { label: 'Canonical Location', value: 'Mungandapalem, East Godavari District, Andhra Pradesh' },
+            { label: 'Presiding Deity', value: TEMPLE.deity },
+            { label: 'Documentation Standard', value: 'Evidence-based provenance labels on every historical record' }
+          ]}
+          relatedLinks={[
+            { label: 'Darshan & Temple Timings', to: '/timings' },
+            { label: 'Annual Festivals & Jathara', to: '/festivals' },
+            { label: 'Visiting & Directions', to: '/contact' }
+          ]}
+        />
+      </div>
 
       <AsyncSection
         loading={loading}

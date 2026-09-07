@@ -41,9 +41,15 @@ import timingsHandler from '../server/timings/index.js';
 import videosHandler from '../server/videos/index.js';
 import mediaFileHandler from '../server/media/file/index.js';
 import syncAssetsHandler from '../server/admin/sync-assets/index.js';
+import seoHandler from '../server/seo/index.js';
+import sitemapHandler from '../server/sitemap/index.js';
+import robotsHandler from '../server/robots/index.js';
 
 const ROUTE_TABLE = [
   { prefix: 'health', handler: healthHandler },
+  { prefix: 'seo', handler: seoHandler },
+  { prefix: 'sitemap', handler: sitemapHandler },
+  { prefix: 'robots', handler: robotsHandler },
   { prefix: 'admin/sync-assets', handler: syncAssetsHandler },
   { prefix: 'admin/payments', handler: adminPaymentsHandler },
   { prefix: 'announcements', handler: announcementsHandler },
@@ -94,6 +100,14 @@ export default async function handler(req, res) {
     if (!req.query[key]) {
       req.query[key] = value;
     }
+  }
+
+  // Direct matches for root sitemap.xml and robots.txt
+  if (pathname === 'sitemap.xml' || pathname === 'sitemap') {
+    return sitemapHandler(req, res);
+  }
+  if (pathname === 'robots.txt' || pathname === 'robots') {
+    return robotsHandler(req, res);
   }
 
   // Find matching route

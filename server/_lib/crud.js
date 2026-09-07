@@ -172,8 +172,35 @@ export function createResourceHandler(config) {
     try {
       /* ---------------- READ (public) ---------------- */
       if (req.method === 'GET') {
+        const reqId = extractId(req) || req.query?.id;
+        const reqSlug = req.query?.slug;
+
         // Admin sessions see unpublished rows too.
         const user = await getAuthenticatedUser(req).catch(() => null);
+        const pubFilter = !user && publicWhere ? ` AND (${publicWhere})` : '';
+
+        if (reqSlug) {
+          const result = await query(
+            `SELECT ${publicSelect} FROM ${table} WHERE slug = $1${pubFilter} LIMIT 1`,
+            [reqSlug]
+          );
+          if (!result.rows.length) {
+            return sendNotFound(res, `${entityType} not found.`);
+          }
+          return sendSuccess(res, { item: result.rows[0] });
+        }
+
+        if (reqId) {
+          const result = await query(
+            `SELECT ${publicSelect} FROM ${table} WHERE id = $1${pubFilter} LIMIT 1`,
+            [reqId]
+          );
+          if (!result.rows.length) {
+            return sendNotFound(res, `${entityType} not found.`);
+          }
+          return sendSuccess(res, { item: result.rows[0] });
+        }
+
         const where = user || !publicWhere ? '' : ` WHERE ${publicWhere}`;
         const result = await query(
           `SELECT ${publicSelect} FROM ${table}${where} ORDER BY ${orderBy}`

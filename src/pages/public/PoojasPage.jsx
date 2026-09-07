@@ -1,9 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import apiClient from '../../services/apiClient.js';
 import Icon from '../../components/Icon.jsx';
 import { AsyncSection } from '../../components/States.jsx';
 import PhonePePayment, { formatPaise } from '../../components/PhonePePayment.jsx';
-import { formatTime } from '../../config/temple.js';
+import { formatTime, TEMPLE } from '../../config/temple.js';
+import SeoHead from '../../components/SeoHead.jsx';
 
 /**
  * Poojas and seva booking.
@@ -295,6 +297,11 @@ export default function PoojasPage() {
   /* ---------------- Pooja list ---------------- */
   return (
     <main className="page-main">
+      <SeoHead
+        title={`Poojas & Seva Booking | ${TEMPLE.name}`}
+        description={`Offer sacred sevas and poojas to Sri Somalamma Thalli at ${TEMPLE.name}, Mungandapalem. Timings, seva procedures, offering amounts, and official booking.`}
+        canonicalPath="/poojas"
+      />
       <header className="page-header">
         <p className="page-eyebrow">Sevas &amp; Poojas</p>
         <h1 className="page-title">Book a Pooja</h1>
@@ -325,7 +332,11 @@ export default function PoojasPage() {
             return (
               <article key={pooja.id} className="pooja-card">
                 <div className="pooja-card-body">
-                  <h2 className="pooja-name">{pooja.name}</h2>
+                  <h2 className="pooja-name">
+                    <Link to={`/poojas/${pooja.slug || pooja.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>
+                      {pooja.name}
+                    </Link>
+                  </h2>
                   {pooja.name_telugu ? (
                     <p className="pooja-name-telugu font-telugu">{pooja.name_telugu}</p>
                   ) : null}
@@ -370,6 +381,14 @@ export default function PoojasPage() {
                         : 'Booking opens once the temple publishes the offering amount.'}
                     </p>
                   )}
+                  <div style={{ marginTop: '0.75rem', textAlign: 'center' }}>
+                    <Link
+                      to={`/poojas/${pooja.slug || pooja.id}`}
+                      style={{ fontSize: '0.85rem', color: 'var(--color-primary, #b45309)', textDecoration: 'none', fontWeight: 500 }}
+                    >
+                      View Details &amp; Guidelines →
+                    </Link>
+                  </div>
                 </div>
               </article>
             );

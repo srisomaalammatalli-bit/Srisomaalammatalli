@@ -10,7 +10,8 @@
     "migrate": "node database/migrate.js",
     "seed": "node database/seed.js",
     "seed:history": "node database/seed_history.js",
-    "import:assets": "node database/import_assets.js"
+    "import:assets": "node database/import_assets.js",
+    "test:seo": "node t_seo.mjs && node t_geo.mjs && node t_aeo.mjs"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

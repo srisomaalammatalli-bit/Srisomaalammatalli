@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import apiClient from '../../services/apiClient.js';
 import { useSettings, composeAddress, settingValue, formatClockRange } from '../../hooks/useSettings.js';
+import SeoHead from '../../components/SeoHead.jsx';
+import AiAnswerBlock from '../../components/AiAnswerBlock.jsx';
+import { TEMPLE, ADDRESS_SINGLE_LINE, MAPS_DIRECTIONS_URL, formatTimeRange } from '../../config/temple.js';
 
 export default function ContactPage() {
   // Contact details are committee-managed. Nothing here is hard-coded: an
@@ -48,24 +51,66 @@ export default function ContactPage() {
     }
   };
 
+  const contactFacts = [
+    { label: 'Temple Name', value: TEMPLE.name },
+    { label: 'Alternate Name', value: TEMPLE.alternateName },
+    { label: 'Full Canonical Address', value: address || ADDRESS_SINGLE_LINE },
+    { label: 'Village & Area', value: 'Mungandapalem, Munjavarapu Kottu' },
+    { label: 'Mandal & District', value: 'P. Gannavaram Mandal, East Godavari District' },
+    { label: 'State & PIN Code', value: 'Andhra Pradesh, India - 533214' },
+    { label: 'Darshan Hours', value: 'Morning 06:30 AM – 11:30 AM | Evening 04:30 PM – 08:25 PM' }
+  ];
+
+  const contactRelatedLinks = [
+    { label: 'Darshan & Pooja Timings', to: '/timings' },
+    { label: 'Daily Sevas & Offerings', to: '/poojas' },
+    { label: 'Annual Jathara & Festivals', to: '/festivals' },
+    { label: 'Temple History & Significance', to: '/history' }
+  ];
+
   return (
     <main className="page-main">
+      <SeoHead
+        title={`Contact & Location | ${TEMPLE.name}`}
+        description={`Plan your visit to ${TEMPLE.name}, Mungandapalem, Munjavarapu Kottu, P. Gannavaram Mandal, East Godavari District, Andhra Pradesh. PIN: 533214. Darshan hours, directions, and official enquiry form.`}
+        canonicalPath="/contact"
+      />
       <header className="page-header">
         <h1 className="page-title">
-          Visit the Devasthanam
+          Visit &amp; Contact Devasthanam
         </h1>
         <p className="page-subtitle">
-          Plan your pilgrimage to Sri Somalamma Talli Temple
+          Plan your pilgrimage to {TEMPLE.name} in Mungandapalem
         </p>
       </header>
+
+      {/* AI Grounding / AEO Quick Answer Block */}
+      <div style={{ maxWidth: '960px', margin: '0 auto 2.5rem' }}>
+        <AiAnswerBlock
+          question={`How do I reach ${TEMPLE.name} and what is the exact canonical address?`}
+          answer={`${TEMPLE.name} is situated in Mungandapalem, Munjavarapu Kottu, P. Gannavaram Mandal, East Godavari District, Andhra Pradesh, India (PIN: 533214). Devotees traveling from Rajahmundry, Ravulapalem, Amalapuram, or Vijayawada can reach the temple via the state highway network of East Godavari and Konaseema. The temple is open daily for morning darshan (06:30 AM to 11:30 AM) and evening darshan (04:30 PM to 08:25 PM).`}
+          facts={contactFacts}
+          relatedLinks={contactRelatedLinks}
+        />
+      </div>
 
       <div className="contact-layout">
         {/* Left: Location & Contact Info */}
         <div className="contact-column">
           <div className="map-placeholder">
             <span className="map-pin" aria-hidden="true">📍</span>
-            <div className="map-title">Temple Sacred Coordinates</div>
-            <div className="map-sub">{address || 'Address will be published soon.'}</div>
+            <div className="map-title">Sacred Temple Location</div>
+            <div className="map-sub">{address || ADDRESS_SINGLE_LINE}</div>
+            <div style={{ marginTop: '0.75rem' }}>
+              <a
+                className="btn btn-sm btn-secondary"
+                href={mapsUrl || MAPS_DIRECTIONS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                🗺️ Open in Google Maps
+              </a>
+            </div>
           </div>
 
           <div className="card-surface contact-details">

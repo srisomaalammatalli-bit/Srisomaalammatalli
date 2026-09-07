@@ -103,9 +103,17 @@ export default function devApiPlugin() {
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
         const url = new URL(req.url, 'http://localhost');
-        if (!url.pathname.startsWith('/api/')) return next();
+        let match = null;
+        if (url.pathname === '/sitemap.xml') {
+          match = { file: path.join(API_DIR, 'sitemap', 'index.js'), id: null };
+        } else if (url.pathname === '/robots.txt') {
+          match = { file: path.join(API_DIR, 'robots', 'index.js'), id: null };
+        } else if (url.pathname.startsWith('/api/')) {
+          match = resolveHandlerFile(url.pathname);
+        } else {
+          return next();
+        }
 
-        const match = resolveHandlerFile(url.pathname);
         if (!match) {
           res.statusCode = 404;
           res.setHeader('Content-Type', 'application/json');

@@ -12,28 +12,32 @@
  */
 
 export const TEMPLE = Object.freeze({
-  name: 'Sri Somaalamma Talli Temple',
+  name: 'Srisomaalammatalli Temple',
+  alternateName: 'Sri Somalamma Talli Temple',
   nameTelugu: 'శ్రీ సోమాలమ్మ తల్లి దేవాలయం',
-  shortName: 'Sri Somaalamma Talli',
+  shortName: 'Srisomaalammatalli',
   deity: 'Sri Somalamma Thalli',
   deityTelugu: 'శ్రీ సోమాలమ్మ తల్లి',
+  canonicalDomain: 'https://srisomaalammatalli.in',
+  entityId: 'https://srisomaalammatalli.in/#temple',
 
   address: Object.freeze({
     line1: 'Mungandapalem, Munjavarapu Kottu',
     line2: 'P. Gannavaram Mandal',
-    city: 'Dr. B. R. Ambedkar Konaseema District',
+    city: 'P. Gannavaram Mandal',
+    district: 'East Godavari District',
     state: 'Andhra Pradesh',
     pincode: '533214',
     country: 'India'
   }),
 
   /**
-   * Contact details have not been supplied yet. The UI checks these and shows
-   * "will be published soon" rather than a fabricated number or address.
+   * Official verified contact details.
    */
   contact: Object.freeze({
-    phone: '',
-    email: ''
+    phone: '+91 98667 33559',
+    rawPhone: '9866733559',
+    email: 'srisomaalammatalli@gmail.com'
   }),
 
   /** Verified darshan hours — the same every day of the week. */
@@ -55,8 +59,8 @@ export const TEMPLE = Object.freeze({
 export const ADDRESS_SINGLE_LINE = [
   TEMPLE.address.line1,
   TEMPLE.address.line2,
-  TEMPLE.address.city,
-  `${TEMPLE.address.state} ${TEMPLE.address.pincode}`
+  TEMPLE.address.district,
+  `${TEMPLE.address.state}, India - ${TEMPLE.address.pincode}`
 ].join(', ');
 
 /**
