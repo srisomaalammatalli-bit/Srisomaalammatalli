@@ -110,6 +110,13 @@ export default async function handler(req, res) {
     return robotsHandler(req, res);
   }
 
+  // Google Search Console HTML verification file handler
+  if (/^google[a-z0-9]+\.html$/i.test(pathname)) {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.end(`google-site-verification: ${pathname}`);
+  }
+
   // Find matching route
   for (const route of ROUTE_TABLE) {
     if (pathname === route.prefix) {

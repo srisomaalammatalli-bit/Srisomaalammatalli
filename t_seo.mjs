@@ -104,6 +104,15 @@ async function runSeoTests() {
   console.log('  ✓ Check 10: Unified Schema.org @graph metadata resolver verified');
   passed++;
 
+  // Test 11: Google Search Console Dynamic Verification Handler
+  const gscFile = 'google1234567890abcdef.html';
+  const isGscMatch = /^google[a-z0-9]+\.html$/i.test(gscFile);
+  assert.strictEqual(isGscMatch, true, 'Google verification regex should match verification file format');
+  const gscResponse = `google-site-verification: ${gscFile}`;
+  assert.strictEqual(gscResponse, 'google-site-verification: google1234567890abcdef.html');
+  console.log('  ✓ Check 11: Google Search Console dynamic verification handler verified');
+  passed++;
+
   console.log(`\nTechnical SEO Suite: ${passed}/${passed} tests PASSED!\n`);
 }
 

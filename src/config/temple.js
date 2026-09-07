@@ -20,6 +20,7 @@ export const TEMPLE = Object.freeze({
   deityTelugu: 'శ్రీ సోమాలమ్మ తల్లి',
   canonicalDomain: 'https://srisomaalammatalli.in',
   entityId: 'https://srisomaalammatalli.in/#temple',
+  googleSiteVerification: '',
 
   address: Object.freeze({
     line1: 'Mungandapalem, Munjavarapu Kottu',

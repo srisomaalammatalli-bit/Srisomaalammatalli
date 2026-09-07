@@ -103,6 +103,12 @@ export default function devApiPlugin() {
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
         const url = new URL(req.url, 'http://localhost');
+        if (/^\/google[a-z0-9]+\.html$/i.test(url.pathname)) {
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'text/html; charset=utf-8');
+          return res.end(`google-site-verification: ${url.pathname.slice(1)}`);
+        }
+
         let match = null;
         if (url.pathname === '/sitemap.xml') {
           match = { file: path.join(API_DIR, 'sitemap', 'index.js'), id: null };

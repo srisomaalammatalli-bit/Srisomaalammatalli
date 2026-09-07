@@ -20,7 +20,8 @@ export default function SeoHead({
   type = 'website',
   schemaGraph = null,
   breadcrumbs = null,
-  noindex = false
+  noindex = false,
+  googleSiteVerification = ''
 }) {
   const fullCanonicalUrl = `${TEMPLE.canonicalDomain}${canonicalPath ? (canonicalPath.startsWith('/') ? canonicalPath : `/${canonicalPath}`) : ''}`;
   const resolvedTitle = title
@@ -50,6 +51,10 @@ export default function SeoHead({
     // 2. Standard Meta Tags
     setMetaTag('name', 'description', resolvedDescription);
     setMetaTag('name', 'robots', noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
+    const verificationCode = googleSiteVerification || TEMPLE.googleSiteVerification;
+    if (verificationCode) {
+      setMetaTag('name', 'google-site-verification', verificationCode);
+    }
 
     // 3. Canonical Link
     let canonicalLink = document.querySelector('link[rel="canonical"]');

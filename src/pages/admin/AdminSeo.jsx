@@ -10,6 +10,7 @@ export default function AdminSeo() {
     seo_default_description: `Official portal of ${TEMPLE.name}, Mungandapalem, Munjavarapu Kottu, P. Gannavaram Mandal, East Godavari District, Andhra Pradesh. Temple timings, pooja details, events, festivals, history, and official announcements.`,
     default_og_image: '/assets/hero-banner.jpg',
     indexnow_key: '',
+    google_site_verification: '',
     social_maps_url: '',
     social_facebook: '',
     social_instagram: '',
@@ -253,6 +254,20 @@ export default function AdminSeo() {
             placeholder="/assets/hero-banner.jpg"
           />
           <span className="form-hint">Resolution: 1200x630px recommended for high-DPI social cards.</span>
+        </div>
+
+        <div className="form-group" style={{ marginBottom: '1.25rem' }}>
+          <label className="form-label">Google Search Console Verification Code</label>
+          <input
+            type="text"
+            className="form-input"
+            value={settings.google_site_verification || ''}
+            onChange={(e) => setSettings({ ...settings, google_site_verification: e.target.value })}
+            placeholder="e.g. paste google HTML file token or meta tag token"
+          />
+          <span className="form-hint">
+            Direct HTML file verification is supported automatically at <code>/google[token].html</code>. Alternatively, paste your verification meta tag token here.
+          </span>
         </div>
 
         <div className="form-group" style={{ marginBottom: '1.5rem' }}>
