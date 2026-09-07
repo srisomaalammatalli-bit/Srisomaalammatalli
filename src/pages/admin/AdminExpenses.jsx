@@ -47,27 +47,42 @@ export default function AdminExpenses() {
   const missingCount = expenses.filter(e => e.status === 'Missing').length;
   const verifiedTotal = expenses.filter(e => e.status === 'Verified').reduce((s, e) => s + Number(e.amount), 0);
 
-  const handleCreateExpense = (e) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState('');
+
+  const handleCreateExpense = async (e) => {
     e.preventDefault();
-    if (!title.trim() || !amount || Number(amount) <= 0 || !paidTo.trim()) return;
+    setFormError('');
+    if (!title.trim() || !amount || Number(amount) <= 0 || !paidTo.trim()) {
+      setFormError('Please fill in title, positive amount, and payee.');
+      return;
+    }
 
-    adminStore.addExpense({
-      title: title.trim(),
-      category,
-      amount: Number(amount),
-      paidTo: paidTo.trim(),
-      paymentMethod,
-      description: description.trim(),
-      receiptUrl: hasReceipt ? `VOUCHER-${Date.now().toString().slice(-4)}.pdf` : null,
-      status: hasReceipt ? 'Verified' : 'Missing',
-      fy: selectedFY
-    });
+    try {
+      setIsSubmitting(true);
+      await adminStore.addExpense({
+        title: title.trim(),
+        category,
+        amount: Number(amount),
+        paidTo: paidTo.trim(),
+        paymentMethod,
+        description: description.trim(),
+        receiptUrl: hasReceipt ? `VOUCHER-${Date.now().toString().slice(-4)}.pdf` : null,
+        status: hasReceipt ? 'Verified' : 'Missing',
+        fy: selectedFY
+      });
 
-    setTitle('');
-    setAmount('');
-    setPaidTo('');
-    setDescription('');
-    setShowAddModal(false);
+      setTitle('');
+      setAmount('');
+      setPaidTo('');
+      setDescription('');
+      setShowAddModal(false);
+    } catch (err) {
+      console.error('[AdminExpenses] Error recording expense:', err);
+      setFormError(err?.message || 'Failed to record expense. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleDeleteExpense = async (exp) => {
@@ -323,6 +338,12 @@ export default function AdminExpenses() {
               <button onClick={() => setShowAddModal(false)} style={{ border: 'none', background: 'none', fontSize: '18px', cursor: 'pointer' }}>✕</button>
             </div>
 
+            {formError && (
+              <div style={{ background: '#fee2e2', color: '#b91c1c', padding: '10px 14px', borderRadius: '8px', fontSize: '13px', marginBottom: '14px', fontWeight: 500 }}>
+                ⚠️ {formError}
+              </div>
+            )}
+
             <form onSubmit={handleCreateExpense}>
               <div style={{ marginBottom: '14px' }}>
                 <label className="input-label">Expense Item / Title *</label>
@@ -408,8 +429,10 @@ export default function AdminExpenses() {
               </div>
 
               <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                <button type="button" onClick={() => setShowAddModal(false)} className="btn btn-outline">Cancel</button>
-                <button type="submit" className="btn btn-primary">Record Expense</button>
+                <button type="button" disabled={isSubmitting} onClick={() => setShowAddModal(false)} className="btn btn-outline">Cancel</button>
+                <button type="submit" disabled={isSubmitting} className="btn btn-primary">
+                  {isSubmitting ? 'Recording Expense…' : 'Record Expense'}
+                </button>
               </div>
             </form>
           </div>

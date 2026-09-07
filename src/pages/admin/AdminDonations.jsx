@@ -51,31 +51,48 @@ export default function AdminDonations() {
   const upiTotal = donations.filter(d => d.paymentMethod === 'UPI').reduce((sum, d) => sum + Number(d.amount), 0);
   const cashTotal = donations.filter(d => d.paymentMethod === 'Cash').reduce((sum, d) => sum + Number(d.amount), 0);
 
-  const handleCreateDonation = (e) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState('');
+
+  const handleCreateDonation = async (e) => {
     e.preventDefault();
-    if (!donorName.trim() || !amount || Number(amount) <= 0) return;
+    setFormError('');
+    if (!donorName.trim() || !amount || Number(amount) <= 0) {
+      setFormError('Please provide a valid donor name and amount.');
+      return;
+    }
 
-    const newDon = adminStore.addDonation({
-      donorName: donorName.trim(),
-      // No invented fallback: an unrecorded number stays unrecorded.
-      mobile: mobile.trim(),
-      email: email.trim() || undefined,
-      address: address.trim() || undefined,
-      category,
-      amount: Number(amount),
-      paymentMethod,
-      notes: notes.trim() || 'Recorded via Admin Portal',
-      fy: selectedFY
-    });
+    try {
+      setIsSubmitting(true);
+      const newDon = await adminStore.addDonation({
+        donorName: donorName.trim(),
+        // No invented fallback: an unrecorded number stays unrecorded.
+        mobile: mobile.trim() || 'Devotee',
+        email: email.trim() || undefined,
+        address: address.trim() || undefined,
+        category,
+        amount: Number(amount),
+        paymentMethod,
+        notes: notes.trim() || 'Recorded via Admin Portal',
+        fy: selectedFY
+      });
 
-    setDonorName('');
-    setMobile('');
-    setEmail('');
-    setAddress('');
-    setAmount('');
-    setNotes('');
-    setShowAddModal(false);
-    setSelectedReceipt(newDon);
+      setDonorName('');
+      setMobile('');
+      setEmail('');
+      setAddress('');
+      setAmount('');
+      setNotes('');
+      setShowAddModal(false);
+      if (newDon) {
+        setSelectedReceipt(newDon);
+      }
+    } catch (err) {
+      console.error('[AdminDonations] Error recording donation:', err);
+      setFormError(err?.message || 'Failed to record donation. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleDeleteDonation = async (d) => {
@@ -320,6 +337,12 @@ export default function AdminDonations() {
               <button onClick={() => setShowAddModal(false)} style={{ border: 'none', background: 'none', fontSize: '18px', cursor: 'pointer' }}>✕</button>
             </div>
 
+            {formError && (
+              <div style={{ background: '#fee2e2', color: '#b91c1c', padding: '10px 14px', borderRadius: '8px', fontSize: '13px', marginBottom: '14px', fontWeight: 500 }}>
+                ⚠️ {formError}
+              </div>
+            )}
+
             <form onSubmit={handleCreateDonation}>
               <div style={{ marginBottom: '14px' }}>
                 <label className="input-label">Devotee / Family Name *</label>
@@ -414,8 +437,10 @@ export default function AdminDonations() {
               </div>
 
               <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                <button type="button" onClick={() => setShowAddModal(false)} className="btn btn-outline">Cancel</button>
-                <button type="submit" className="btn btn-primary">Generate Official Receipt</button>
+                <button type="button" disabled={isSubmitting} onClick={() => setShowAddModal(false)} className="btn btn-outline">Cancel</button>
+                <button type="submit" disabled={isSubmitting} className="btn btn-primary">
+                  {isSubmitting ? 'Recording Offering…' : 'Generate Official Receipt'}
+                </button>
               </div>
             </form>
           </div>

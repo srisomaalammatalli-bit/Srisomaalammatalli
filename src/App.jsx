@@ -123,6 +123,9 @@ export default function App() {
         <Route path="gallery" element={<AdminGallery />} />
         <Route path="videos" element={<AdminVideos />} />
         <Route path="important-dates" element={<AdminDates />} />
+        <Route path="dates" element={<Navigate to="/admin/important-dates" replace />} />
+        <Route path="land" element={<Navigate to="/admin/land-chit" replace />} />
+        <Route path="chit" element={<Navigate to="/admin/land-chit" replace />} />
         <Route path="committee" element={<AdminCommittee />} />
         {/* Temple archive. Inside the same AdminLayout route, so the existing
             authentication guard covers them unchanged. */}

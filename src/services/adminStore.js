@@ -45,6 +45,7 @@ function normalizeDonation(d) {
   if (!d) return d;
   return {
     ...d,
+    id: d.id,
     receiptNo: d.receiptNo || d.receipt_no || '',
     donorName: d.donorName || d.donor_name || 'Devotee',
     mobile: d.mobile || '',
@@ -61,6 +62,7 @@ function normalizeExpense(e) {
   if (!e) return e;
   return {
     ...e,
+    id: e.id,
     title: e.title || '',
     paidTo: e.paidTo || e.paid_to || '',
     amount: Number(e.amount || 0),
@@ -72,6 +74,73 @@ function normalizeExpense(e) {
   };
 }
 
+function normalizeLand(l) {
+  if (!l) return l;
+  return {
+    ...l,
+    id: l.id,
+    propertyName: l.propertyName || l.property_name || 'Temple Land',
+    tenantName: l.tenantName || l.tenant_name || '',
+    period: l.period || 'Annual',
+    amount: Number(l.amount || 0),
+    paymentDate: l.paymentDate || l.payment_date || l.created_at || '',
+    proofUrl: l.proofUrl || l.proof_url || '',
+    status: l.status || 'Verified',
+    fy: l.fy || l.financial_year_id || ''
+  };
+}
+
+function normalizeChit(c) {
+  if (!c) return c;
+  return {
+    ...c,
+    id: c.id,
+    chitName: c.chitName || c.chit_name || 'Temple Committee Welfare Chit',
+    memberName: c.memberName || c.member_name || '',
+    installmentNo: Number(c.installmentNo ?? c.installment_no ?? 1),
+    dueDate: c.dueDate || c.due_date || '',
+    paidDate: c.paidDate || c.paid_date || c.created_at || '',
+    amount: Number(c.amount || 0),
+    status: c.status || 'Paid',
+    fy: c.fy || c.financial_year_id || ''
+  };
+}
+
+function normalizeImportantDate(d) {
+  if (!d) return d;
+  return {
+    ...d,
+    id: d.id,
+    title: d.title || '',
+    desc: d.desc || d.description || '',
+    description: d.description || d.desc || '',
+    date: d.date || d.event_date || d.eventDate || '',
+    eventDate: d.eventDate || d.event_date || d.date || '',
+    month: d.month || d.month_label || d.monthLabel || '',
+    monthLabel: d.monthLabel || d.month_label || d.month || '',
+    day: d.day || d.day_number || d.dayNumber || '',
+    dayNumber: d.dayNumber || d.day_number || d.day || '',
+    priority: d.priority || 'Medium',
+    showOnTicker: d.showOnTicker !== undefined ? Boolean(d.showOnTicker) : (d.show_on_ticker !== undefined ? Boolean(d.show_on_ticker) : true),
+    published: d.published !== undefined ? Boolean(d.published) : true
+  };
+}
+
+function normalizeCommittee(m) {
+  if (!m) return m;
+  return {
+    ...m,
+    id: m.id,
+    name: m.name || '',
+    mobile: m.mobile || '',
+    email: m.email || '',
+    role: m.role || 'Admin',
+    status: m.status || 'Active',
+    avatarBg: m.avatarBg || m.avatar_bg || '#6E1F2A',
+    lastActive: m.lastActive || m.last_active || 'Today'
+  };
+}
+
 /** Endpoints fetched for the admin workspace, and where each result lands. */
 const SOURCES = [
   { key: 'donations', path: '/donations', pick: (d) => (d.donations || d.items || []).map(normalizeDonation) },
@@ -79,12 +148,12 @@ const SOURCES = [
   { key: 'events', path: '/events', pick: (d) => d.events || d.items || [] },
   { key: 'gallery', path: '/gallery', pick: (d) => d.items || [] },
   { key: 'videos', path: '/videos', pick: (d) => d.items || [] },
-  { key: 'importantDates', path: '/important-dates', pick: (d) => d.dates || d.items || [] },
-  { key: 'committee', path: '/committee', pick: (d) => d.committee || d.members || d.items || [] },
+  { key: 'importantDates', path: '/important-dates', pick: (d) => (d.dates || d.items || []).map(normalizeImportantDate) },
+  { key: 'committee', path: '/committee', pick: (d) => (d.committee || d.members || d.items || []).map(normalizeCommittee) },
   { key: 'auditLogs', path: '/audit', pick: (d) => d.logs || d.items || [] },
   // /land-chit returns both collections in one response.
-  { key: 'landIncome', path: '/land-chit', pick: (d) => d.landIncome || d.land || [] },
-  { key: 'chitIncome', path: '/land-chit', pick: (d) => d.chitIncome || d.chit || [] }
+  { key: 'landIncome', path: '/land-chit', pick: (d) => (d.landIncome || d.land || []).map(normalizeLand) },
+  { key: 'chitIncome', path: '/land-chit', pick: (d) => (d.chitIncome || d.chit || []).map(normalizeChit) }
 ];
 
 class AdminStore {
@@ -154,10 +223,7 @@ class AdminStore {
     );
 
     // Financial summary, the year being reported on, and the years the
-    // temple actually has. financialYears was declared in the initial state
-    // but never filled, so the reports screen could never offer a year to
-    // choose. It comes from the database now, and stays empty when the
-    // database has none rather than assuming a current year.
+    // temple actually has.
     try {
       const reports = await apiClient.get('/reports');
       next._summary = reports?.summary || null;
@@ -181,11 +247,6 @@ class AdminStore {
    * Derived figures — computed from real records only
    * ---------------------------------------------------------------- */
 
-  /**
-   * Financial summary. Values come from /api/reports, which aggregates the
-   * database. When nothing has been recorded every figure is zero — that is
-   * the correct answer, not a placeholder.
-   */
   getFinancialSummary(fy = this.state.activeFY) {
     const s = this.state._summary;
     return {
@@ -198,16 +259,12 @@ class AdminStore {
       totalChit: Number(s?.totalChit || 0),
       jatharaCollection: Number(s?.jatharaCollections || 0),
       devoteeCount: new Set(
-        (this.state.donations || []).map((d) => d.mobile || d.donor_name).filter(Boolean)
+        (this.state.donations || []).map((d) => d.mobile || d.donor_name || d.donorName).filter(Boolean)
       ).size,
-      hasData: Boolean(s) && Number(s.totalIncome || 0) + Number(s.totalExpenses || 0) > 0
+      hasData: Boolean(s) && Number(s?.totalIncome || 0) + Number(s?.totalExpenses || 0) > 0
     };
   }
 
-  /**
-   * Dashboard cards. Captions describe what the number is, and never assert
-   * unverifiable claims such as a year-on-year trend or where funds are held.
-   */
   getDashboardKPIs(fy = this.state.activeFY) {
     const summary = this.getFinancialSummary(fy);
     const note = summary.hasData ? '' : 'No records yet';
@@ -261,7 +318,7 @@ class AdminStore {
   }
 
   addDonation(donation) {
-    return this.createThenRefresh('/donations', donation, (d) => d.donation);
+    return this.createThenRefresh('/donations', donation, (d) => normalizeDonation(d.donation || d));
   }
 
   deleteDonation(id) {
@@ -269,7 +326,7 @@ class AdminStore {
   }
 
   addExpense(expense) {
-    return this.createThenRefresh('/expenses', expense, (d) => d.expense);
+    return this.createThenRefresh('/expenses', expense, (d) => normalizeExpense(d.expense || d));
   }
 
   deleteExpense(id) {
@@ -277,7 +334,7 @@ class AdminStore {
   }
 
   addEvent(event) {
-    return this.createThenRefresh('/events', event, (d) => d.event);
+    return this.createThenRefresh('/events', event, (d) => d.event || d);
   }
 
   deleteEvent(id) {
@@ -285,7 +342,7 @@ class AdminStore {
   }
 
   addGalleryItem(item) {
-    return this.createThenRefresh('/gallery', item, (d) => d.item);
+    return this.createThenRefresh('/gallery', item, (d) => d.item || d);
   }
 
   deleteGalleryItem(id) {
@@ -293,7 +350,7 @@ class AdminStore {
   }
 
   addVideo(item) {
-    return this.createThenRefresh('/videos', item, (d) => d.item);
+    return this.createThenRefresh('/videos', item, (d) => d.item || d);
   }
 
   deleteVideo(id) {
@@ -301,23 +358,42 @@ class AdminStore {
   }
 
   addImportantDate(date) {
-    return this.createThenRefresh('/important-dates', date, (d) => d.date);
+    return this.createThenRefresh('/important-dates', date, (d) => normalizeImportantDate(d.date || d));
+  }
+
+  updateImportantDate(id, patch) {
+    return apiClient.put(`/important-dates?id=${encodeURIComponent(id)}`, patch).then((res) => {
+      this.refresh();
+      return res;
+    });
   }
 
   deleteImportantDate(id) {
-    return this.removeThenRefresh(`/important-dates/${encodeURIComponent(id)}`);
+    return this.removeThenRefresh(`/important-dates?id=${encodeURIComponent(id)}`);
   }
 
   addCommitteeMember(member) {
-    return this.createThenRefresh('/committee', member, (d) => d.member);
+    return this.createThenRefresh('/committee', member, (d) => normalizeCommittee(d.member || d));
+  }
+
+  deleteCommitteeMember(id) {
+    return this.removeThenRefresh(`/committee?id=${encodeURIComponent(id)}`);
   }
 
   addLandIncome(record) {
-    return this.createThenRefresh('/land-chit', { ...record, kind: 'land' }, (d) => d.record);
+    return this.createThenRefresh('/land-chit', { ...record, type: 'land', kind: 'land' }, (d) => normalizeLand(d.record || d));
+  }
+
+  deleteLandIncome(id) {
+    return this.removeThenRefresh(`/land-chit?id=${encodeURIComponent(id)}`);
   }
 
   addChitIncome(record) {
-    return this.createThenRefresh('/land-chit', { ...record, kind: 'chit' }, (d) => d.record);
+    return this.createThenRefresh('/land-chit', { ...record, type: 'chit', kind: 'chit' }, (d) => normalizeChit(d.record || d));
+  }
+
+  deleteChitIncome(id) {
+    return this.removeThenRefresh(`/land-chit?id=${encodeURIComponent(id)}`);
   }
 
   async updateSettings(settings) {
@@ -326,21 +402,15 @@ class AdminStore {
     return data;
   }
 
-  /**
-   * Audit entries are written server-side by the API for every privileged
-   * action, so the client neither can nor should create them.
-   */
   addAuditLog() {
     console.warn('[adminStore] Audit entries are recorded by the server.');
   }
 
-  /** The previous store could reset itself; real records must not be wiped. */
   resetToDefault() {
     console.warn('[adminStore] Temple records cannot be reset from the browser.');
     return this.refresh();
   }
 
-  /** Compatibility shim: the old store persisted to localStorage. */
   saveState() {
     console.warn('[adminStore] State is persisted in PostgreSQL, not the browser.');
   }
